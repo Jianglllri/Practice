@@ -442,5 +442,48 @@
     "question": "扩容后训练在 warmup 结束附近开始震荡。怎么做对照，改了什么才算验证通过？",
     "answer": "先把 loss、学习率、未裁剪梯度范数、裁剪频率和有效 token 数画在同一时间轴，并重放首个异常 batch 排查数据和数值溢出。只延长 warmup、只降低峰值学习率，分别与原设置对照。如果延长后能稳定度过早期且维持原峰值，支持早期更新过快的解释。如果震荡随到达原峰值而推迟，优先验证峰值过高。保留相同数据顺序和 token 预算，比较验证 loss 与收敛速度，再检查更长训练是否稳定。",
     "url": "https://arxiv.org/abs/1706.02677"
+  },
+  {
+    "id": "model:ml-batch-selection",
+    "kind": "model",
+    "topic": "ml",
+    "title": "训练调参｜怎样选 micro-batch 和梯度累积？",
+    "question": "显存只够每卡两条样本，怎样选累积步数？和一次大 batch 一样吗？",
+    "answer": "先用代表性的长序列测显存和 tokens/s，选择能稳定跑的 micro-batch。有效样本 batch = 每卡 micro-batch × 梯度累积步数 × 数据并行副本数。比如 4 张数据并行卡，每卡 2 条，累积 8 步，每次更新 64 条。变长序列按所有 rank 和 micro-batch 的有效标签 token 总数归一化，避免把每步平均 loss 再等权平均。每次累积完成后才裁剪、更新参数和推进调度器。累积可近似大 batch 的梯度，BatchNorm 统计等依赖当前批次的操作仍可能不同。比较配置时固定训练 token 预算，记录吞吐、显存、更新次数与验证 loss。",
+    "url": "https://docs.pytorch.org/docs/stable/notes/amp_examples.html"
+  },
+  {
+    "id": "model:ml-loss-oscillation",
+    "kind": "model",
+    "topic": "ml",
+    "title": "训练排障｜Loss 震荡怎么定位？",
+    "question": "训练 loss 有尖峰，如何区分批次噪声和真实不稳定？",
+    "answer": "先同时看逐步 loss、按 token 聚合的平滑曲线、固定验证集 loss、学习率和裁剪前梯度范数。若尖峰随序列长度、领域或有效标签数变化，用同批数据重放，检查采样、mask、归一化和异常标签。若尖峰随学习率上升且伴随梯度范数放大，用同一 checkpoint 和数据顺序对照较低峰值学习率或更长 warmup，每次只改一项。若出现非有限值，再按前向、反传和优化器更新定位。用验证 loss 和后续稳定性确认修复。"
+  },
+  {
+    "id": "model:ml-loss-stalled",
+    "kind": "model",
+    "topic": "ml",
+    "title": "训练排障｜Loss 一直不下降怎么办？",
+    "question": "训练没报错，loss 几百步几乎不动。你会怎么排？",
+    "answer": "先确认训练数据、日志口径和更新确实生效。检查标签移位、有效标签数量、mask、模型 train 模式、参数是否冻结、优化器参数组、学习率调度及 AMP 跳步。对少量干净样本做过拟合测试，并记录梯度范数和更新前后的参数差。如果小样本也学不动，优先定位计算图、目标或更新路径。如果小样本能学，扩大样本后分别检查数据冲突、学习率过低、正则过强和容量不足。比较同 token 预算下的训练和验证 loss，保留可复现的最小案例。"
+  },
+  {
+    "id": "model:ml-gradient-clipping",
+    "kind": "model",
+    "topic": "ml",
+    "title": "训练调参｜梯度裁剪怎么调？",
+    "question": "clip norm 设成 1 就够了吗？梯度累积、FP16 和分片训练时怎么操作？",
+    "answer": "全局范数裁剪按 min(1,阈值/梯度范数) 缩放梯度。先记录裁剪前范数分布、尖峰和裁剪比例，用稳定区间的范数作为选阈值的参考，再做无裁剪和不同阈值的短跑。每次在有效 batch 梯度累积完后裁剪一次。FP16 AMP 先 unscale 再裁剪，分片模型用框架提供的全局范数接口。几乎每步都裁剪时检查学习率、归一化和数据，也看阈值是否过紧。用验证 loss、尖峰和实际更新幅度判断。",
+    "url": "https://docs.pytorch.org/docs/stable/notes/amp_examples.html"
+  },
+  {
+    "id": "model:ml-weight-decay-tuning",
+    "kind": "model",
+    "topic": "ml",
+    "title": "训练调参｜AdamW 的 weight decay 怎么选？",
+    "question": "训练集继续改善，验证集开始变差，怎样试 weight decay？",
+    "answer": "AdamW 每次更新对参数施加独立于自适应梯度预条件的衰减，单步乘数是 1−学习率×衰减系数。先固定学习率曲线、batch 和更新预算，跑零衰减及围绕基线的几档，比较验证指标、训练损失和权重范数。bias 或归一化参数常放入无衰减组，先核对实际参数组。LoRA 重点确认哪些 adapter 在优化器里。学习率或训练步数改变时，累计衰减也会变，需要重新验证。过强时可能压低训练表现，过弱时结合学习曲线检查过拟合。",
+    "url": "https://arxiv.org/abs/1711.05101"
   }
 ]
