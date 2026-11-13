@@ -728,5 +728,55 @@
     "question": "券直接进账户、用户主动领取、用户付费买券包，三种动作如何建模和算净成本？",
     "answer": "静默发券从分配直接走到核销，如有激活步骤再单独建模；领券按 P(领取|分配)×P(核销|领取)×核销条件下成本；付费券包按购买概率乘购买条件下的净成本，净成本为有效期内多次核销补贴总额减券包净收入，并处理退款、手续费及商家分摊。对比策略时用分配人群的 ITT 和统一成熟窗口，领取或购买是处理后的中介；避免只比领券人或购包人。周预算提前为未成熟券预留额度。",
     "effect": "按渠道跟踪领取、购买、核销、退包与到期漏斗，核对按决策用户计算的增量毛利和净补贴。"
+  },
+  {
+    "id": "case:rag-sft-small",
+    "kind": "model",
+    "topic": "industry",
+    "title": "少样本｜为什么做 SFT，直接 RAG 行不行？",
+    "question": "只有几十到几百条标注，业务想做规则问答和结构化输出。为什么要 SFT？你怎样证明它有增量？",
+    "answer": "我会先看小的是知识库还是标注集。如果主要错在规则更新、事实缺失或引用不准，我先用检索加提示词。知识库很小时也会测全文入上下文的基线。先人工给正确证据，看看错误能不能消失。如果正确证据已经给到，模型仍反复答错同一类业务规则、工具参数或任务行为，我再考虑小规模 LoRA SFT。只要求 JSON 格式的话，先测结构化解码和校验。训练只用覆盖典型和难例的高质量样本，按规则版本、实体或模板留出测试集。固定基座、检索、提示和输出预算，比较同一批题上加 SFT 的收益。",
+    "effect": "报告检索 Recall@K、引用正确率、任务成功率、结构校验率和成本。证据召回不变而任务成功率提高，才支持行为学习带来收益。如果收益不稳定或回归超标，保留通过验收的基线。",
+    "url": "https://arxiv.org/abs/2005.11401"
+  },
+  {
+    "id": "case:training-nan",
+    "kind": "model",
+    "topic": "industry",
+    "title": "训练排障｜Loss 或梯度出现 NaN 怎么办？",
+    "question": "SFT 跑到第 N 步突然出现 NaN。你先看什么，如何重现和恢复？",
+    "answer": "先停更新，保存首个坏 step 的样本 ID、rank、随机种子、学习率和 GradScaler 值，从最近健康 checkpoint 重放。用 isfinite 按输入、logits、loss、反传梯度、优化器更新后参数的顺序定位首个异常。前向坏先看空样本、label 越界、有效标签为零或全 mask、log/除零和自定义算子。反向或更新坏就看未缩放梯度范数、学习率和优化器状态，用同一个 batch 做 FP32 或 BF16 对照。FP16 用 GradScaler，梯度累积完成后先 unscale 再裁剪，非有限梯度跳过更新。确认是溢出时再调精度或把敏感算子转 FP32，确认是梯度爆炸再调学习率、warmup 和裁剪。分布式训练同步异常标志，所有 rank 一起跳过或停止。",
+    "effect": "用触发批次和前后批次回放，确认 loss、梯度、参数均有限且训练继续收敛。恢复时同时加载对应的优化器、调度器和 scaler 状态。",
+    "url": "https://docs.pytorch.org/docs/stable/notes/amp_examples.html"
+  },
+  {
+    "id": "case:training-precision",
+    "kind": "model",
+    "topic": "industry",
+    "title": "训练精度｜怎么回答 BF16、FP16 和 FP32？",
+    "question": "面试官问你项目用了什么精度。怎样把计算、权重、优化器、量化和部署分开说清楚？",
+    "answer": "我的回答会逐项报训练配置。举例，支持 BF16 的 GPU 上用 BF16 autocast 做前向，敏感算子按框架策略用 FP32，权重存储、梯度累积和 AdamW 状态 dtype 按实际配置确认。BF16 指数范围接近 FP32，尾数比 FP16 短，通常无需 loss scaling。FP16 指数范围较窄，常配 GradScaler 防梯度下溢。QLoRA 要分别报冻结基座的量化格式、计算 dtype 和 adapter dtype。部署时再单独报权重和 KV cache 精度。",
+    "effect": "用训练配置和实际张量 dtype 对账；同一批数据比训练 tokens/s、峰值显存、跳步次数和验证集表现。",
+    "url": "https://docs.pytorch.org/docs/stable/amp.html"
+  },
+  {
+    "id": "case:training-memory",
+    "kind": "model",
+    "topic": "industry",
+    "title": "训练显存｜几张卡、峰值多少、怎么算？",
+    "question": "7B 模型做全参或 LoRA，你如何估算显存，并回答项目的实测峰值？",
+    "answer": "先报 GPU 型号与张数、可训练参数量、序列长度、每卡 micro-batch、梯度累积、checkpointing 和分片策略。以 7B 全参、BF16 权重和梯度、FP32 master 权重与两份 FP32 AdamW 状态为估算例子，模型状态每参数 16 字节，约 112 GB（104 GiB），另有激活、临时缓冲和通信开销。具体实现可能省掉 master 副本或分片。LoRA 冻结基座，主要省基座梯度和优化器状态，基座权重与反传激活仍占空间。",
+    "effect": "热身到 AdamW 状态完成初始化后测稳定训练窗口，记录各 rank 的 max_memory_allocated 和 max_memory_reserved，取最高一张卡。另报 GPU 监控口径覆盖的进程显存，并把估算和实测分开。",
+    "url": "https://huggingface.co/docs/transformers/v4.50.0/model_memory_anatomy"
+  },
+  {
+    "id": "case:decode-speed",
+    "kind": "model",
+    "topic": "industry",
+    "title": "推理解码｜怎么报 token/s 才有可比性？",
+    "question": "被问到 decode 速度，你会给哪个数字？怎么区分单请求速度和服务吞吐？",
+    "answer": "先报模型版本、GPU、推理引擎、权重与 KV cache 精度、并行度、输入和输出长度、并发和缓存命中条件。流式请求拆 TTFT 和 decode。对输出超过一 token 的请求，用 (总耗时−TTFT)/(输出 token 数−1) 算 TPOT。TPOT 40 ms 对应约 25 token/s，是换算例子。服务吞吐用观测窗口内所有请求生成的 token 数除以墙钟时间。高并发可能提高聚合吞吐，同时拉长单请求延迟。",
+    "effect": "同一负载预热后测并发 1 和目标并发，报告 TTFT、TPOT 和端到端延迟的 P50/P95、输出 token/s、请求数与错误率。明确是否包含排队，RAG 检索耗时单独计。",
+    "url": "https://docs.vllm.ai/en/latest/cli/bench/serve/"
   }
 ]
