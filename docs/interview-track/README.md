@@ -14,6 +14,7 @@
 - 用 Notess 的 [LLM 基础](https://github.com/Jianglllri/Notess/tree/main/imports/agent-interview-300/01-LLM基础) 复习 Self-Attention、位置编码、KV Cache、GQA、LoRA。闭卷解释批量推理时 KV Cache 显存和延迟怎么测，以及 LoRA 适合改什么。
 - 练习室做 [持续预训练](http://127.0.0.1:8765/?view=industry&id=case:domain-pretraining)、[训练全链路](http://127.0.0.1:8765/?view=industry&id=case:cpt)。能区分 CPT、SFT、DPO、RL，写出混配消融、数据泄漏检查和遗忘回归。准备一份 90 秒自我介绍和两个可公开讲述的项目候选。
 - 加练五道项目追问。先口述，再对照答案，用自己做过的项目填训练配置和实测数据。若某个数字只做过估算，明确估算条件；尚无实测值时说清测量方案。[小数据选 RAG 还是 SFT](http://127.0.0.1:8765/?view=industry&id=case:rag-sft-small) · [NaN 定位](http://127.0.0.1:8765/?view=industry&id=case:training-nan) · [训练精度](http://127.0.0.1:8765/?view=industry&id=case:training-precision) · [训练显存](http://127.0.0.1:8765/?view=industry&id=case:training-memory) · [解码速度](http://127.0.0.1:8765/?view=industry&id=case:decode-speed)
+- 补机器学习基础。闭卷推导 MSE 的最优预测和 softmax 交叉熵的梯度，再练类别不平衡、正则化、优化器、数据泄漏和排序损失。[机器学习基础题](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-regression-loss)
 
 ## 第二周 · Agent 与 AutoResearch
 

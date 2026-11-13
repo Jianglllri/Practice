@@ -351,5 +351,69 @@
     "question": "设计一个能回答内部文档问题、还能查工单的 Qwen 系统。如何防止权限越界，怎样验证上线效果？",
     "answer": "文档召回前应用租户与权限过滤，用 Embedding 召回、Reranker 重排，生成时附引用。工单工具通过服务端鉴权、参数校验和操作审计；把检索内容视为数据。用权限用例、召回覆盖、引用正确率、工具成功率和 P95 做分层评测。追问：召回无命中时，怎样区分该拒答还是应该使用工具？",
     "url": "https://github.com/QwenLM/Qwen-Agent"
+  },
+  {
+    "id": "model:ml-regression-loss",
+    "kind": "model",
+    "topic": "ml",
+    "title": "MSE、MAE、Huber 与分位数损失",
+    "question": "回归有异常值时怎么选损失？低估成本更高怎么办？",
+    "answer": "令 r=y−ŷ。MSE 用 r²，平方惩罚大误差，最优点预测是条件均值。MAE 用 |r|，大误差的梯度幅度恒定，最优点预测是条件中位数。Huber 在 |r|≤δ 时用 r²/2，其余用 δ(|r|−δ/2)。低估成本更高时可用较高分位数 τ 的 Pinball Loss，公式是 max(τr,(τ−1)r)。均值最优可以把期望平方误差展开成条件方差加预测值与条件均值的平方差来证明。"
+  },
+  {
+    "id": "model:ml-cross-entropy",
+    "kind": "model",
+    "topic": "ml",
+    "title": "交叉熵、NLL 与 logits",
+    "question": "二分类和多分类交叉熵怎么写？多标签为什么用 BCE？",
+    "answer": "二分类 BCE 为 −y log p−(1−y)log(1−p)，p=sigmoid(z)。互斥多分类用 softmax，单样本损失为 −log p_y，也等于 logsumexp(z)−z_y。它们分别对应 Bernoulli 和 Categorical 的负对数似然。多标签每个标签独立用 sigmoid+BCE。实现时用接收 logits 的融合损失避免先算概率再取 log 带来的数值问题。softmax 交叉熵对 logits 的梯度是 p−one_hot(y)。"
+  },
+  {
+    "id": "model:ml-imbalanced-loss",
+    "kind": "model",
+    "topic": "ml",
+    "title": "加权 BCE、Focal Loss 与类别不平衡",
+    "question": "正例只有 1%，准确率 99%。该怎么选损失和阈值？",
+    "answer": "先看 PR-AUC、精确率、召回率和固定误报量下的召回。正例训练信号弱时，可增加正类权重或重采样。Focal Loss 在交叉熵前乘 (1−p_t)^γ，降低易样本贡献。加权和重采样会影响概率口径，用接近线上分布的独立数据校准，再根据错判成本或审核容量选阈值。"
+  },
+  {
+    "id": "model:ml-regularization",
+    "kind": "model",
+    "topic": "ml",
+    "title": "L1、L2、Dropout 和早停",
+    "question": "训练集好、验证集差，怎么选正则化？",
+    "answer": "先排查切分和分布差异。L1 加 λΣ|w|，可使部分系数变为零。L2 加 λΣw²，倾向于缩小系数。Dropout 训练时随机屏蔽部分激活，常规推理关闭。早停按验证集保留 checkpoint，最终效果在独立测试集报告。AdamW 把权重衰减直接用于参数更新，与在 Adam 损失里加 L2 的效果一般不同。"
+  },
+  {
+    "id": "model:ml-bias-variance",
+    "kind": "model",
+    "topic": "ml",
+    "title": "偏差、方差和学习曲线",
+    "question": "训练和验证表现都差，或者只有验证差，分别怎么查？",
+    "answer": "先用一致的评估口径画训练、验证曲线并对照基线。两者都差时，检查特征、标签、优化和模型容量。训练好而验证差时，检查过拟合和分布差异，再尝试更多数据、正则化或减小模型。平方损失下，固定输入处的期望预测误差可分为偏差平方、估计方差和不可约噪声。"
+  },
+  {
+    "id": "model:ml-optimizer-basics",
+    "kind": "model",
+    "topic": "ml",
+    "title": "SGD、Momentum、AdamW 与学习率",
+    "question": "AdamW 前期收敛快，验证指标却下降，怎么定位？",
+    "answer": "SGD 用小批量梯度更新，Momentum 平滑历史梯度，Adam 用梯度的一阶矩和二阶矩估计调节参数步长，AdamW 单独施加权重衰减。固定数据、初始化和有效 batch，分别调学习率、warmup、调度和 weight decay。训练 loss 振荡先查学习率和梯度范数。训练 loss 降而验证指标跌，再查过拟合和优化目标是否贴合业务指标。"
+  },
+  {
+    "id": "model:ml-evaluation-split",
+    "kind": "model",
+    "topic": "ml",
+    "title": "交叉验证、时间切分与数据泄漏",
+    "question": "随机切分时 AUC 很高，上线后下降，如何排查？",
+    "answer": "先定义预测时点，确认特征当时已可用。时序任务用滚动时间验证，标签窗口跨切分边界时留出间隔。评估新用户泛化时按用户分组。标准化、缺失填充、特征选择和目标编码在训练折拟合，再应用到验证折。用最终测试集做独立确认。"
+  },
+  {
+    "id": "model:ml-ranking-loss",
+    "kind": "model",
+    "topic": "ml",
+    "title": "Pointwise、Pairwise 与 Listwise 排序损失",
+    "question": "搜索排序用点击 BCE 就够吗？何时换排序损失？",
+    "answer": "Pointwise 给单个候选预测点击或相关性，便于校准。Pairwise 在同一查询内学习偏好差，例如 −log sigmoid(s_pos−s_neg)。Listwise 在整个候选列表上计算目标，可以突出列表头部质量。点击受位置与曝光影响，构造负样本时先检查可见曝光。对照同一批候选的 NDCG@K、分桶结果和线上指标。"
   }
 ]
