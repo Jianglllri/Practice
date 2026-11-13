@@ -1,0 +1,302 @@
+[
+  {
+    "id": "model:rope",
+    "kind": "model",
+    "topic": "llm",
+    "title": "手写 RoPE",
+    "question": "给定位置、Q/K 张量和偶数旋转维度，写出 RoPE。为什么内积体现相对位置？",
+    "answer": "为每对通道按位置乘频率得到角度，应用二维旋转。两次旋转的相对角度只依赖位置差。测试位置 0、范数保持及 KV Cache 下的位置偏移。",
+    "url": "https://github.com/AIR-hl/llm-interview-code/blob/main/Components/RoPE.ipynb",
+    "sources": [
+      {
+        "title": "GitHub 参考实现",
+        "url": "https://github.com/AIR-hl/llm-interview-code/blob/main/Components/RoPE.ipynb"
+      }
+    ]
+  },
+  {
+    "id": "model:bpe",
+    "kind": "model",
+    "topic": "llm",
+    "title": "手写 BPE 分词器",
+    "question": "如何训练合并规则并在编码时应用？",
+    "answer": "统计相邻符号对，迭代合并最高频对，记录合并优先级。编码时按已学规则优先级合并。测试重复符号、平票与 Unicode 字节边界。",
+    "url": "https://github.com/AIR-hl/llm-interview-code/blob/main/Components/BPE.ipynb",
+    "sources": [
+      {
+        "title": "GitHub 参考实现",
+        "url": "https://github.com/AIR-hl/llm-interview-code/blob/main/Components/BPE.ipynb"
+      }
+    ]
+  },
+  {
+    "id": "model:rmsnorm",
+    "kind": "model",
+    "topic": "llm",
+    "title": "手写 RMSNorm 和 LayerNorm",
+    "question": "实现最后一维归一化。两者的统计量有何区别？",
+    "answer": "RMSNorm 用 x / sqrt(mean(x²)+eps)，再乘缩放。LayerNorm 先减均值、用方差缩放，再仿射变换。低精度时可用 FP32 算统计量。",
+    "url": "https://github.com/AIR-hl/llm-interview-code/blob/main/Norm/RMSNorm.ipynb",
+    "sources": [
+      {
+        "title": "GitHub 参考实现",
+        "url": "https://github.com/AIR-hl/llm-interview-code/blob/main/Norm/RMSNorm.ipynb"
+      }
+    ]
+  },
+  {
+    "id": "model:mla",
+    "kind": "model",
+    "topic": "llm",
+    "title": "MLA 与 GQA 的缓存区别",
+    "question": "MLA 压缩什么？与 GQA 共享 KV 头有何区别？",
+    "answer": "GQA 让一组查询头共享 K/V；MLA 缓存压缩后的 KV 潜变量及位置分量，再通过投影得到注意力所需表示。比较时计入位置分量、投影和运行时实现。",
+    "url": "https://github.com/AIR-hl/llm-interview-code/blob/main/Attention/MLA.ipynb",
+    "sources": [
+      {
+        "title": "GitHub 参考实现",
+        "url": "https://github.com/AIR-hl/llm-interview-code/blob/main/Attention/MLA.ipynb"
+      }
+    ]
+  },
+  {
+    "id": "model:swiglu",
+    "kind": "model",
+    "topic": "llm",
+    "title": "手写 SwiGLU 前馈层",
+    "question": "写出门控投影、值投影和输出投影的形状。",
+    "answer": "两条输入投影产生同形状中间张量，逐元素计算 SiLU(gate) × value，再投影回隐藏维度。对比参数量时计入三组矩阵。",
+    "url": "https://github.com/AIR-hl/llm-interview-code/blob/main/Components/SwiGLU.ipynb",
+    "sources": [
+      {
+        "title": "GitHub 参考实现",
+        "url": "https://github.com/AIR-hl/llm-interview-code/blob/main/Components/SwiGLU.ipynb"
+      }
+    ]
+  },
+  {
+    "id": "model:sft-mask",
+    "kind": "model",
+    "topic": "llm",
+    "title": "手写 SFT 的掩码损失",
+    "question": "如何对齐下一 token 标签，并让提示词、padding 和工具观察不计入损失？",
+    "answer": "对齐 logits[..., :-1, :] 和 labels[..., 1:]，将不监督的目标标记为 ignore_index。按有效 token 归一化，测试空监督批次与样本拼接边界。",
+    "url": "https://github.com/AIR-hl/llm-interview-code/blob/main/Functional/sft.ipynb",
+    "sources": [
+      {
+        "title": "GitHub 参考实现",
+        "url": "https://github.com/AIR-hl/llm-interview-code/blob/main/Functional/sft.ipynb"
+      }
+    ]
+  },
+  {
+    "id": "model:stream-tool-parser",
+    "kind": "model",
+    "topic": "agent",
+    "title": "手写流式工具调用解析器",
+    "question": "工具参数 JSON 可能被切在任意字符处，如何增量组装并校验？",
+    "answer": "按调用 ID 或流索引累积增量，等待该调用完成后解析 JSON，校验工具名与参数，再交给执行层。测试转义、交错调用、非法参数和截断。",
+    "url": "https://github.com/AIR-hl/llm-interview-code/blob/main/Functional/tool_function.ipynb",
+    "sources": [
+      {
+        "title": "GitHub 参考实现",
+        "url": "https://github.com/AIR-hl/llm-interview-code/blob/main/Functional/tool_function.ipynb"
+      }
+    ]
+  },
+  {
+    "id": "model:affine-quantization",
+    "kind": "model",
+    "topic": "llm",
+    "title": "手写仿射量化",
+    "question": "给定 scale 和 zero point，如何量化、反量化并测误差？",
+    "answer": "量化计算 round(x/scale)+zero point 并夹到整数范围；反量化计算 (q-zero point)×scale。测试常量张量、离群值、舍入和饱和。",
+    "url": "https://github.com/AIR-hl/llm-interview-code/blob/main/Functional/quantize.ipynb",
+    "sources": [
+      {
+        "title": "GitHub 参考实现",
+        "url": "https://github.com/AIR-hl/llm-interview-code/blob/main/Functional/quantize.ipynb"
+      }
+    ]
+  },
+  {
+    "id": "model:logistic-regression",
+    "kind": "model",
+    "topic": "ml",
+    "title": "手写逻辑回归",
+    "question": "实现二分类预测和批量梯度，如何避免 BCE 溢出？",
+    "answer": "从 logits 计算稳定损失 max(z,0)-z*y+log1p(exp(-abs(z)))。权重梯度是 Xᵀ(sigmoid(z)-y)/N，偏置梯度取平均残差。可用有限差分核对。",
+    "url": "https://github.com/khangich/machine-learning-interview/blob/master/README.md",
+    "sources": [
+      {
+        "title": "GitHub 面试题单",
+        "url": "https://github.com/khangich/machine-learning-interview/blob/master/README.md"
+      }
+    ]
+  },
+  {
+    "id": "model:kmeans",
+    "kind": "model",
+    "topic": "ml",
+    "title": "手写 K-means",
+    "question": "写出分配与中心更新，如何处理空簇？",
+    "answer": "按平方欧氏距离分配样本，用簇均值更新中心。空簇可用远离现有中心的样本重置。用最大轮数及中心变化控制终止，评估多次初始化。",
+    "url": "https://github.com/khangich/machine-learning-interview/blob/master/README.md",
+    "sources": [
+      {
+        "title": "GitHub 面试题单",
+        "url": "https://github.com/khangich/machine-learning-interview/blob/master/README.md"
+      }
+    ]
+  },
+  {
+    "id": "model:lora",
+    "github_followup": "写出低秩增量与合并公式，并用同一输入验证合并前后输出。",
+    "sources": [
+      {
+        "title": "GitHub 参考实现",
+        "url": "https://github.com/AIR-hl/llm-interview-code/blob/main/Components/LoRA.ipynb"
+      }
+    ]
+  },
+  {
+    "id": "model:dpo",
+    "github_followup": "实现策略与参考模型的偏好对 log-ratio，测试两者相同时的损失。",
+    "sources": [
+      {
+        "title": "GitHub 参考实现",
+        "url": "https://github.com/AIR-hl/llm-interview-code/blob/main/RL/DPO.ipynb"
+      }
+    ]
+  },
+  {
+    "id": "xhs:sampling",
+    "github_followup": "手写 MHA 的 reshape、transpose 和 causal mask，核对每一步张量形状。",
+    "sources": [
+      {
+        "title": "GitHub 参考实现",
+        "url": "https://github.com/AIR-hl/llm-interview-code/blob/main/Attention/MHA.ipynb"
+      }
+    ]
+  },
+  {
+    "id": "model:kv-cache",
+    "github_followup": "用逐 token 解码和整段前向做数值对照，检查位置和掩码偏移。",
+    "sources": [
+      {
+        "title": "GitHub 参考实现",
+        "url": "https://github.com/AIR-hl/llm-interview-code/blob/main/Attention/MHA_kvcache.ipynb"
+      }
+    ]
+  },
+  {
+    "id": "xhs:contrastive",
+    "github_followup": "对批内成对样本构建相似度矩阵，用对角线作为正样本标签。",
+    "sources": [
+      {
+        "title": "GitHub 参考实现",
+        "url": "https://github.com/AIR-hl/llm-interview-code/blob/main/Functional/InfoNCE.ipynb"
+      }
+    ]
+  },
+  {
+    "id": "xhs:grpo",
+    "github_followup": "实现组内优势、概率比和裁剪，测试同组奖励完全相同的情况。",
+    "sources": [
+      {
+        "title": "GitHub 参考实现",
+        "url": "https://github.com/AIR-hl/llm-interview-code/blob/main/RL/GRPO.ipynb"
+      }
+    ]
+  },
+  {
+    "id": "model:speculative-decoding",
+    "kind": "model",
+    "topic": "llm",
+    "title": "推测解码的接受与校正",
+    "question": "草稿模型提出多个 token 后，目标模型如何验收？",
+    "answer": "从左到右验收，接受概率为 min(1,p/q)。第一次拒绝时按正残差归一化重采样并丢弃后续提案。用接受率、每 token 延迟和吞吐验证收益。",
+    "url": "https://github.com/vllm-project/vllm/blob/main/docs/features/speculative_decoding/README.md",
+    "sources": [
+      {
+        "title": "GitHub 实现与说明",
+        "url": "https://github.com/vllm-project/vllm/blob/main/docs/features/speculative_decoding/README.md"
+      }
+    ]
+  },
+  {
+    "id": "model:paged-kv",
+    "kind": "model",
+    "topic": "llm",
+    "title": "分页 KV Cache 与连续批处理",
+    "question": "请求长度不同，如何减少 KV Cache 碎片？连续批处理在哪个粒度插入请求？",
+    "answer": "分页以固定大小块保存 KV，通过块表映射逻辑位置。连续批处理按解码迭代更新活跃请求集合。对照测碎片、等待时间和吞吐。",
+    "url": "https://github.com/leriomaggio/vllm-inference-lab/blob/main/docs/paged-attention.md",
+    "sources": [
+      {
+        "title": "GitHub 实现与说明",
+        "url": "https://github.com/leriomaggio/vllm-inference-lab/blob/main/docs/paged-attention.md"
+      }
+    ]
+  },
+  {
+    "id": "model:structured-output",
+    "kind": "model",
+    "topic": "agent",
+    "title": "受约束解码与结构化输出",
+    "question": "怎样在生成时约束 JSON 格式？生成成功后还要检查什么？",
+    "answer": "用语法或状态机根据已生成前缀过滤下一 token。检查 tokenizer 与语法边界，生成后验证字段约束、业务权限和工具参数。",
+    "url": "https://github.com/changkun/minllm",
+    "sources": [
+      {
+        "title": "GitHub 实现与说明",
+        "url": "https://github.com/changkun/minllm"
+      }
+    ]
+  },
+  {
+    "id": "model:pca",
+    "kind": "model",
+    "topic": "ml",
+    "title": "PCA 与 SVD",
+    "question": "怎么用 SVD 实现 PCA？为什么要先中心化？",
+    "answer": "将每个特征减去训练均值，对中心化矩阵做 SVD，取前 k 个右奇异向量投影。解释方差与奇异值平方成正比。测试时复用训练均值和投影。",
+    "url": "https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/decomposition/_pca.py",
+    "sources": [
+      {
+        "title": "GitHub 实现与说明",
+        "url": "https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/decomposition/_pca.py"
+      }
+    ]
+  },
+  {
+    "id": "model:tree-split",
+    "kind": "model",
+    "topic": "ml",
+    "title": "手写 CART 的分裂",
+    "question": "如何选择数值特征的切分点，避免对每个阈值重复扫描？",
+    "answer": "排序后按阈值增量更新左右标签计数，比较加权 Gini 的下降。只在相邻不同值之间考虑阈值，处理空子树、最小叶样本和并列。",
+    "url": "https://github.com/scikit-learn/scikit-learn/tree/main/sklearn/tree",
+    "sources": [
+      {
+        "title": "GitHub 实现与说明",
+        "url": "https://github.com/scikit-learn/scikit-learn/tree/main/sklearn/tree"
+      }
+    ]
+  },
+  {
+    "id": "model:time-split",
+    "kind": "model",
+    "topic": "ml",
+    "title": "时间切分与交叉验证",
+    "question": "为什么日志数据不能随意打乱做 K 折？如何防止标签窗口穿越？",
+    "answer": "按时间向前验证，拟合预处理仅使用训练窗口。必要时留出间隔，确保训练标签已经成熟；分组场景再核对实体是否跨分区泄漏。",
+    "url": "https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/model_selection/_split.py",
+    "sources": [
+      {
+        "title": "GitHub 实现与说明",
+        "url": "https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/model_selection/_split.py"
+      }
+    ]
+  }
+]

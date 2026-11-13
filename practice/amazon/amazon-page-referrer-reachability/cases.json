@@ -1,0 +1,26 @@
+[
+  {
+    "id": "example_1",
+    "args": [
+      [
+        [
+          "/catalog",
+          "/home"
+        ],
+        [
+          "/item/7",
+          "/catalog"
+        ],
+        [
+          "/cart",
+          "/item/7"
+        ]
+      ],
+      [
+        "/home",
+        "/cart"
+      ]
+    ],
+    "expected": true
+  }
+]

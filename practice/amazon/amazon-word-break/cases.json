@@ -1,0 +1,13 @@
+[
+  {
+    "id": "example_1",
+    "args": [
+      "leetcode",
+      [
+        "leet",
+        "code"
+      ]
+    ],
+    "expected": true
+  }
+]

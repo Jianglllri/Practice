@@ -1,0 +1,35 @@
+[
+  {
+    "id": "example_1",
+    "args": [
+      [
+        "cat",
+        "cats",
+        "dog",
+        "catsdog",
+        "dogcat",
+        "rat"
+      ]
+    ],
+    "expected": [
+      "catsdog",
+      "dogcat"
+    ]
+  },
+  {
+    "id": "example_2",
+    "args": [
+      [
+        "a",
+        "aa",
+        "aaa",
+        "aaaa"
+      ]
+    ],
+    "expected": [
+      "aa",
+      "aaa",
+      "aaaa"
+    ]
+  }
+]

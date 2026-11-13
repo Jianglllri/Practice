@@ -1,0 +1,355 @@
+[
+  {
+    "id": "model:transformer",
+    "kind": "model",
+    "title": "Transformer 的注意力和掩码",
+    "question": "为什么点积注意力要除以 √dₖ？训练 decoder 时 causal mask 和 padding mask 分别挡住什么？",
+    "answer": "点积方差在独立单位方差的近似下随 dₖ 增长，缩放可以减轻 softmax 饱和。因果掩码挡住未来位置，padding mask 挡住填充位置。追问：KV cache 节省了什么计算，为什么仍要读取历史 K/V？",
+    "url": "https://arxiv.org/abs/1706.03762",
+    "topic": "llm"
+  },
+  {
+    "id": "model:bert",
+    "kind": "model",
+    "title": "BERT 的训练目标",
+    "question": "BERT 的双向上下文从何而来？MLM 和 decoder 的下一 token 预测有什么区别？",
+    "answer": "BERT encoder 的注意力允许看两侧未被遮盖的 token，MLM 恢复选定位置；自回归 decoder 只能使用左侧上下文逐步预测。追问：做语义检索时怎样构造正负样本并验证向量质量？",
+    "url": "https://arxiv.org/abs/1810.04805",
+    "topic": "llm"
+  },
+  {
+    "id": "model:resnet",
+    "kind": "model",
+    "title": "ResNet 的残差连接",
+    "question": "残差块为什么写成 F(x)+x？通道数或分辨率变化时如何相加？",
+    "answer": "残差支路学习相对输入的修正，恒等支路提供直接的信息和梯度通路。尺寸不匹配时可用带适当步幅的投影对齐。追问：如何用训练误差验证深层模型的优化退化？",
+    "url": "https://arxiv.org/abs/1512.03385",
+    "topic": "ml"
+  },
+  {
+    "id": "model:xgboost",
+    "kind": "model",
+    "title": "XGBoost 的分裂与正则化",
+    "question": "XGBoost 为什么使用一阶和二阶梯度？分裂的收益如何受正则项影响？",
+    "answer": "每轮对目标函数在当前预测处做二阶近似，叶子权重和分裂收益由梯度及 Hessian 汇总计算。叶权重惩罚收缩叶子输出，叶子数量惩罚抑制收益很小的分裂。追问：如何在时间序列特征中避免验证泄漏？",
+    "url": "https://arxiv.org/abs/1603.02754",
+    "topic": "ml"
+  },
+  {
+    "id": "project:rag-regression",
+    "kind": "project",
+    "title": "企业知识库 RAG 回答质量下降",
+    "question": "上线后一周，客服反馈引用错误增多。如何定位？如果只有一天修复时间，你先做什么？",
+    "answer": "对比近期部署与文档变更，按租户和问题类型抽样。检查索引版本、权限过滤、召回 Recall@k、重排指标与生成引用正确率。用固定评测集复现，隔离变更，必要时回滚并按错误切片复验。追问：检索命中但回答仍错时怎样继续定位？",
+    "url": "https://github.com/neurarch-ai/awesome-llm-system-design"
+  },
+  {
+    "id": "project:agent-retry",
+    "kind": "project",
+    "title": "Agent 工具调用超时",
+    "question": "Agent 提交工单时超时，工具没有返回工单号。如何避免重复创建并判断任务是否完成？",
+    "answer": "在调用前持久化操作 ID 和意图，优先查询状态或用同一幂等键重试，收到可核验结果后才标记成功。若服务缺乏查询和去重能力，将结果保留为未知并转人工。追问：幂等键过期后如何处理？",
+    "url": "https://arxiv.org/abs/2610.41453"
+  },
+  {
+    "id": "project:serving-latency",
+    "kind": "project",
+    "title": "LLM 推理服务尾延迟",
+    "question": "流量增加后 P95 首 token 延迟翻倍，单 token 生成速度变化不大。你如何验证瓶颈并做容量规划？",
+    "answer": "拆分排队、prefill 与 decode，按输入长度、批大小和并发查看延迟与显存。压测动态批处理、限流和容量，分别看 TTFT、token 间延迟、吞吐与成本。追问：长请求挤占短请求时如何调度？",
+    "url": "https://github.com/neurarch-ai/awesome-llm-system-design"
+  },
+  {
+    "id": "paper:qwen3-8-27b",
+    "kind": "paper",
+    "topic": "qwen",
+    "title": "Qwen3.8-27B｜混合注意力与多模态推理",
+    "url": "https://huggingface.co/Qwen/Qwen3.8-27B",
+    "weights": "https://huggingface.co/Qwen/Qwen3.8-27B",
+    "question": "怎样把 Qwen3.8-27B 的架构设计转化成一套长上下文部署实验？",
+    "answer": "追问：固定硬件和输入长度，如何区分架构节省的内存与思考预算增加的解码成本？",
+    "reading": {
+      "主要创新": "在同一个密集视觉语言模型中结合混合注意力、视觉编码器和可调思考预算，覆盖文本、图像与视频输入。",
+      "实现细节": "模型卡描述了 64 层交替结构，每组有三层 Gated DeltaNet 和一层 Gated Attention。全注意力层采用 24 个查询头、4 个 KV 头。原生上下文为 262,144 token，模型卡另列扩展配置。",
+      "实验与边界": "比较长上下文时分别记录 prefill、decode、峰值显存和检索正确率，并固定推理预算。模型卡披露的是具体检查点与配置，扩展上下文效果应按任务和运行时实测。"
+    }
+  },
+  {
+    "id": "paper:2611.12311",
+    "kind": "paper",
+    "topic": "llm",
+    "title": "MNN-Pocket-0.3B｜端侧小模型技术报告",
+    "url": "https://arxiv.org/html/2611.12311v2",
+    "weights": "https://huggingface.co/taobao-mnn/MNN-Pocket-0.3B",
+    "question": "只有 300M 参数和移动端预算时，如何同时改善指令遵循、内存占用和生成速度？",
+    "answer": "追问：如果换到 Android CPU，如何分别验证首 token 延迟、持续生成速度和峰值内存？",
+    "reading": {
+      "主要创新": "围绕端侧预算共同设计模型、词表、训练和推理。缩减词表可以减轻嵌入和输出投影的负担，也可能使相同文本需要更多 token，因此要同时测词表体积和实际序列长度。",
+      "实现细节": "约 4.1 万亿中英 token 分四阶段预训练，随后做指令微调、多教师在线蒸馏和量化感知训练。在线蒸馏在学生自己生成的上下文上向领域教师学习，量化阶段再适应部署时的低精度。",
+      "实验与边界": "报告支持最长 32K 上下文，给出 173 MB 的 INT4 部署体积，以及 iPad Pro M5 的 Metal 路径最高 466 token/s。设备、后端、上下文长度和热状态都影响实际速度；部署文件大小也不等于运行峰值内存。"
+    }
+  },
+  {
+    "id": "paper:kimi-k3-1-pro",
+    "kind": "paper",
+    "topic": "llm",
+    "title": "Kimi K3.1 Pro｜长程任务强化学习",
+    "url": "https://www.kimi.ai/blog/kimi-k3-1-pro",
+    "weights": "https://huggingface.co/moonshotai/Kimi-K3.1-Pro",
+    "question": "长程 Agent 的强化学习中，为什么 rollout 调度和环境质量会影响训练效果？",
+    "answer": "追问：如何固定工具、任务和采样预算，分别衡量模型、训练规模与 Agent 框架带来的收益？",
+    "reading": {
+      "主要创新": "在 Kimi K3 上扩大后训练规模，把多领域工具任务放进共同的强化学习流程。重点是让跨工具、跨多轮的任务可以稳定产生训练轨迹。",
+      "实现细节": "官方技术文章披露了长上下文推理、沙箱、rollout 调度及环境质检的工程优化。长任务会占用工作进程更久；调度影响单位时间内完成的轨迹数量。环境质检则关系到同一动作能否得到稳定反馈。",
+      "实验与边界": "官方报告内部长程编程基准由 55.95% 升至 61.2%。跨模型结果还受 Agent 框架、工具权限和推理预算影响。文章给出了系统层面的改动，公开信息不足以还原完整训练配方。"
+    }
+  },
+  {
+    "id": "paper:nex-n2-6",
+    "kind": "paper",
+    "topic": "agent",
+    "title": "Nex-N2.6｜工具调用可靠性",
+    "url": "https://huggingface.co/nex-agi/Nex-N2.6",
+    "question": "如何测量 Agent 的重复推理和无效工具选择？固定轨迹做重放能回答什么问题？",
+    "answer": "追问：如果工具名称合法但参数错误，或者写操作重复执行，如何扩展评测？",
+    "reading": {
+      "主要创新": "在 GLM-5.3-Flash 基础上针对工具型任务的重复推理与工具清单遵循做改进，公开约 321B 参数的 FP8 权重。",
+      "实现细节": "模型卡描述了已知问题重放：固定历史会话和工具输出，只测下一条模型回复。工具清单指标检查调用是否落在本次请求声明的工具集合中。模型卡没有公开足以复现训练过程的配方。",
+      "实验与边界": "团队内部重放报告的重复率从 16.0% 降至 1.6%。该评测衡量特定状态下的下一步行为；端到端成功还需要验证参数、权限、状态变化和最终结果。"
+    }
+  },
+  {
+    "id": "paper:2611.17167",
+    "kind": "paper",
+    "title": "长程 Agent 中的 Actor、Judge 和 Teacher",
+    "question": "论文为何分别评估事前选动作和事后评判动作？设计一个消融，检验教师收益是否来自完整轨迹。",
+    "answer": "对照相同决策模型只见当前状态与可见完整轨迹，固定策略、任务与训练预算，比较过程评分质量和最终成功率。论文使用 ALFWorld 与 WebShop；可再用新环境检验外推。arXiv 提交于 2026-11-12。",
+    "url": "https://arxiv.org/abs/2611.17167",
+    "topic": "agent"
+  },
+  {
+    "id": "paper:2611.16905",
+    "kind": "paper",
+    "title": "FOAM 如何降低 SOAP 的开销",
+    "question": "FOAM 改动了 SOAP 的哪两部分？如何判断优化器是否真的更划算？",
+    "answer": "仅保留输入侧预条件，使用行列分解估计二阶矩。用相同数据、模型与硬件比较达到同等验证损失的实际时间、峰值显存和稳定性，并消融两个改动。arXiv 提交于 2026-11-12。",
+    "url": "https://arxiv.org/abs/2611.16905",
+    "topic": "ml"
+  },
+  {
+    "id": "paper:2610.41453",
+    "kind": "paper",
+    "title": "工具状态不明时的证据驱动恢复",
+    "question": "论文如何区分任务实际完成与有足够证据确认完成？怎样测试一个恢复策略是否适用于新工具？",
+    "answer": "工具超时可能对应失败、提交成功或仍在执行；观察到的证据限定可能状态，只有证据支持目标达成才能确认完成。测试时对比重试、状态查询和人工交接策略，注入超时与部分执行，度量重复副作用和确认率。arXiv 提交于 2026-10-30。",
+    "url": "https://arxiv.org/abs/2610.41453",
+    "topic": "agent"
+  },
+  {
+    "id": "model:kv-cache",
+    "kind": "model",
+    "topic": "llm",
+    "title": "KV Cache、GQA 与推理显存",
+    "question": "KV Cache 存什么？GQA 如何降低显存？为什么长上下文 decode 仍然慢？",
+    "answer": "缓存每层历史 token 的 K、V，避免每步重算。GQA 让多个 Q 头共享 K/V 头，缓存大小随 K/V 头数下降。每步仍需访问历史 K/V。追问：如何按上下文长度拆分 TTFT 与每 token 延迟？",
+    "url": "https://arxiv.org/abs/2305.13245"
+  },
+  {
+    "id": "model:lora",
+    "kind": "model",
+    "topic": "llm",
+    "title": "LoRA 与全量微调",
+    "question": "LoRA 更新哪些参数？如何选 rank，如何判断是容量不足还是训练数据有问题？",
+    "answer": "冻结基座，学习低秩权重增量。固定数据和训练预算扫 rank 与目标层，分切片比较验证集，并对照全量或更高 rank。追问：为什么训练省显存和推理可合并是两个问题？",
+    "url": "https://arxiv.org/abs/2106.09685"
+  },
+  {
+    "id": "model:dpo",
+    "kind": "model",
+    "topic": "llm",
+    "title": "DPO 与 RLHF",
+    "question": "DPO 的偏好对包含什么？参考模型有什么作用？",
+    "answer": "用同一提示下的偏好回答与拒绝回答，通过策略相对参考模型的对数概率差优化偏好。参考模型提供约束基准。追问：如何识别长度偏差和偏好过拟合？",
+    "url": "https://arxiv.org/abs/2305.18290"
+  },
+  {
+    "id": "model:react",
+    "kind": "model",
+    "topic": "agent",
+    "title": "ReAct 与工具调用循环",
+    "question": "搜索问答 Agent 怎样交替决策和执行？如何防止重复检索和无限循环？",
+    "answer": "将工具结果写入状态，由下一步决策使用。限制预算和重试，检测重复动作，记录工具参数及证据。追问：用什么指标区分最终答错与过程低效？",
+    "url": "https://arxiv.org/abs/2210.03629"
+  },
+  {
+    "id": "model:eval",
+    "kind": "model",
+    "topic": "agent",
+    "title": "Agent 评估与任务成功",
+    "question": "一个 Agent 声称已完成工单修改，怎样评估真实成功？",
+    "answer": "检查外部状态、授权范围和副作用，保存工具轨迹，重复试验并按故障类别切片。追问：超时后如何区分可安全重试与需要查询状态？",
+    "url": "https://arxiv.org/abs/2406.12045"
+  },
+  {
+    "id": "model:injection",
+    "kind": "model",
+    "topic": "agent",
+    "title": "间接提示注入与工具权限",
+    "question": "检索文档要求把用户数据发到外部地址，Agent 应该如何处理？",
+    "answer": "把检索内容作为数据，把授权和工具约束交给独立控制逻辑。限制可用参数和目的地，高影响操作由真实用户授权。追问：如何构造评估集测攻击成功率与正常任务成功率？",
+    "url": "https://arxiv.org/abs/2302.12173"
+  },
+  {
+    "id": "model:bm25",
+    "kind": "model",
+    "topic": "search",
+    "title": "BM25 与混合检索",
+    "question": "BM25 的词频饱和和长度归一化解决什么问题？怎么和向量召回融合？",
+    "answer": "重复词项的边际增益递减，长度归一化调整长文档偏差。可用 RRF 做基于名次的融合，或用验证集学习融合权重。追问：怎样单独测查询精确匹配和长尾语义匹配？",
+    "url": "https://arxiv.org/abs/2104.08663"
+  },
+  {
+    "id": "model:rerank",
+    "kind": "model",
+    "topic": "search",
+    "title": "双塔召回与交叉编码重排",
+    "question": "双塔为何能建索引？交叉编码重排怎样分配候选数？",
+    "answer": "双塔独立编码文档，可提前缓存向量并近邻查询。交叉编码联合读取查询和文档，计算随候选数增加。用召回上限、NDCG、P95 延迟选 K。追问：怎样区分召回遗漏和重排错误？",
+    "url": "https://arxiv.org/abs/2004.12832"
+  },
+  {
+    "id": "model:hnsw",
+    "kind": "model",
+    "topic": "search",
+    "title": "HNSW 与召回延迟",
+    "question": "提高 efSearch 通常有什么影响？如何评估过滤条件对召回的影响？",
+    "answer": "扩大搜索候选通常增加召回和查询时间。按过滤选择率和数据规模分桶，对比同过滤条件下的精确近邻，报告 Recall@K 与 P95。追问：频繁更新时如何测索引质量衰减？",
+    "url": "https://arxiv.org/abs/1603.09320"
+  },
+  {
+    "id": "model:two-tower",
+    "kind": "model",
+    "topic": "recommendation",
+    "title": "推荐双塔与负样本",
+    "question": "为什么训练常用 batch 内负样本？流行物品采样会引入什么偏差？",
+    "answer": "复用批内向量可降低计算成本；热门物品更常进入批次，未点击也可能只是未曝光。按采样机制做校正或对照，并用时间切分全量候选验证。追问：如何评估新物品覆盖率？",
+    "url": "https://arxiv.org/abs/1909.01189"
+  },
+  {
+    "id": "model:wide-deep",
+    "kind": "model",
+    "topic": "recommendation",
+    "title": "Wide & Deep 的记忆与泛化",
+    "question": "Wide 与 Deep 分别擅长什么？怎样证明交叉特征确实有收益？",
+    "answer": "Wide 用显式交叉记忆历史组合，Deep 用嵌入泛化到未见组合。固定候选与数据切分做消融，并按冷启动和长尾切片验证。追问：线上 CTR 增长但留存下降如何排查？",
+    "url": "https://arxiv.org/abs/1606.07792"
+  },
+  {
+    "id": "model:position-bias",
+    "kind": "model",
+    "topic": "recommendation",
+    "title": "点击反馈与位置偏差",
+    "question": "为什么点击不能直接视为相关性？逆倾向加权有什么代价？",
+    "answer": "展示位置影响被检查概率，点击同时受曝光和相关性影响。逆倾向权重可纠正已建模的曝光机制，小倾向会放大方差。追问：怎样通过随机换位估计倾向？",
+    "url": "https://arxiv.org/abs/1608.04468"
+  },
+  {
+    "id": "model:calibration",
+    "kind": "model",
+    "topic": "ml",
+    "title": "概率校准与决策阈值",
+    "question": "AUC 很高还需要概率校准吗？线上阈值如何设？",
+    "answer": "AUC 看排序，概率校准看预测值与经验频率是否一致。用独立校准集和可靠性图验证，按错误成本与容量选阈值。追问：先验概率漂移时怎样监控？",
+    "url": "https://arxiv.org/abs/1706.04599"
+  },
+  {
+    "id": "model:adamw",
+    "kind": "model",
+    "topic": "ml",
+    "title": "AdamW 与 L2 正则",
+    "question": "AdamW 为什么将权重衰减与梯度更新分开？",
+    "answer": "Adam 的逐参数自适应缩放会同时作用在加入梯度的 L2 项上。AdamW 直接衰减权重，使衰减不被该缩放重新加权。追问：如何公平对比优化器与衰减系数？",
+    "url": "https://arxiv.org/abs/1711.05101"
+  },
+  {
+    "id": "paper:2611.00428",
+    "kind": "paper",
+    "topic": "llm",
+    "title": "多模态模型的等价输入一致性",
+    "question": "同一光谱的单位或呈现形式改变，为什么值得单独测试？如何区分合理拒答与学到截断捷径？",
+    "answer": "固定底层数据与标签，成对比较不同单位、表格和曲线。构造缺失关键区间和缺失无关区间两组，对比拒答率并检查跨数据集泛化。2026-10-30 提交。",
+    "url": "https://arxiv.org/abs/2611.00428"
+  },
+  {
+    "id": "paper:2608.24079",
+    "kind": "paper",
+    "topic": "search",
+    "title": "搜索与推荐共用索引的代价",
+    "question": "内容双塔为什么能接入新品？为什么采样负例上的持平不足以证明全库效果？",
+    "answer": "内容特征可为没有交互的新物品生成向量；采样候选改变竞争集。按时间划分数据，分别对冷暖物品做全目录评估，并比较索引更新成本。2026-08-25 提交。",
+    "url": "https://arxiv.org/abs/2608.24079"
+  },
+  {
+    "id": "paper:2606.29947",
+    "kind": "paper",
+    "topic": "recommendation",
+    "title": "冷启动推荐的召回瓶颈",
+    "question": "把正确物品强制塞进候选集，会如何影响对 LLM 重排的判断？",
+    "answer": "这只测候选已覆盖时的排序能力，会掩盖真实召回遗漏。分别报告候选覆盖率、给定覆盖的重排表现和端到端指标，按新品和内容丰富程度切片。2026-06-29 提交。",
+    "url": "https://arxiv.org/abs/2606.29947"
+  },
+  {
+    "id": "model:qwen-architecture",
+    "kind": "model",
+    "topic": "qwen",
+    "title": "Qwen3.8-27B：混合注意力",
+    "question": "为什么交替使用 Gated DeltaNet 和 Gated Attention？长上下文开销怎么估？",
+    "answer": "模型卡给出 64 层，三层 Gated DeltaNet 加一层 Gated Attention 为一组。前者使用递推状态，后者保留标准注意力的上下文访问能力和 KV 缓存。估算显存时分别计算模型权重、递推状态、注意力层 KV 和临时工作区。追问：如何在相同硬件上验证长文本精确检索质量？",
+    "url": "https://huggingface.co/Qwen/Qwen3.8-27B"
+  },
+  {
+    "id": "model:qwen-serving",
+    "kind": "model",
+    "topic": "qwen",
+    "title": "Qwen 推理系统：思考预算与延迟",
+    "question": "如何给短问答和长程编码设不同的推理预算？",
+    "answer": "模型卡支持调节思考模式和推理深度。按任务类型对照固定输入与输出预算，分别记录首 token 延迟、生成速度、总 token 数、成功率。长程任务还要计入工具时间、失败重试与端到端成本。",
+    "url": "https://huggingface.co/Qwen/Qwen3.8-27B"
+  },
+  {
+    "id": "model:qwen-tools",
+    "kind": "model",
+    "topic": "qwen",
+    "title": "Qwen-Agent：工具调用与状态",
+    "question": "模型输出工具调用后，应用层负责什么？",
+    "answer": "应用层校验工具名、参数和权限，执行工具并将结果回填。持久化会话状态和操作 ID，为写操作设计幂等键及结果查询。追问：如果调用超时但工单已创建，如何避免二次写入？",
+    "url": "https://github.com/QwenLM/Qwen-Agent"
+  },
+  {
+    "id": "model:qwen-retrieval",
+    "kind": "model",
+    "topic": "qwen",
+    "title": "Qwen3 Embedding 与 Reranker",
+    "question": "为什么通常先向量召回，再对少量候选做重排？",
+    "answer": "Embedding 允许离线构建文档向量索引，Reranker 联合读入查询和文档逐对评分。用 Recall@K 看召回覆盖，用 NDCG@K 看顺序，再扫候选数与 P95 延迟。追问：如何隔离召回、重排与生成的收益？",
+    "url": "https://arxiv.org/abs/2506.05176"
+  },
+  {
+    "id": "model:qwen-moe",
+    "kind": "model",
+    "topic": "qwen",
+    "title": "Qwen Max：MoE 容量与部署",
+    "question": "为什么总参数和激活参数要分别看？",
+    "answer": "总参数影响权重存储与部署规模，激活参数反映每个 token 参与计算的部分。实际吞吐还受路由负载、跨卡通信、批量和 KV Cache 影响。追问：如何判断瓶颈是专家通信、显存带宽还是计算？",
+    "url": "https://qwen.ai/blog?id=qwen3.8"
+  },
+  {
+    "id": "project:qwen-rag",
+    "kind": "project",
+    "topic": "qwen",
+    "title": "Qwen 知识库 Agent：从召回到工具执行",
+    "question": "设计一个能回答内部文档问题、还能查工单的 Qwen 系统。如何防止权限越界，怎样验证上线效果？",
+    "answer": "文档召回前应用租户与权限过滤，用 Embedding 召回、Reranker 重排，生成时附引用。工单工具通过服务端鉴权、参数校验和操作审计；把检索内容视为数据。用权限用例、召回覆盖、引用正确率、工具成功率和 P95 做分层评测。追问：召回无命中时，怎样区分该拒答还是应该使用工具？",
+    "url": "https://github.com/QwenLM/Qwen-Agent"
+  }
+]

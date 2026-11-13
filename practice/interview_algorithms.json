@@ -1,0 +1,114 @@
+[
+  {
+    "id": "two_sum",
+    "title": "LC 1 · 两数之和",
+    "url": "https://leetcode.com/problems/two-sum/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0000-0099/0001.Two%20Sum/README.md",
+    "followup": "如果输入有序或要返回所有不重复的数对，怎么改？"
+  },
+  {
+    "id": "3sum",
+    "title": "LC 15 · 三数之和",
+    "url": "https://leetcode.com/problems/3sum/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0000-0099/0015.3Sum/README.md",
+    "followup": "排序后如何避免重复三元组？重复值还能参与合法答案吗？"
+  },
+  {
+    "id": "longest_substring_without_repeating_characters",
+    "title": "LC 3 · 无重复字符的最长子串",
+    "url": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0000-0099/0003.Longest%20Substring%20Without%20Repeating%20Characters/README.md",
+    "followup": "左指针为什么不能回退？如何输出子串本身？"
+  },
+  {
+    "id": "lru_cache",
+    "title": "LC 146 · LRU 缓存",
+    "url": "https://leetcode.com/problems/lru-cache/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0100-0199/0146.LRU%20Cache/README.md",
+    "followup": "如何让 get 和 put 都是 O(1)？容量为 1 时测试哪些情况？"
+  },
+  {
+    "id": "number_of_islands",
+    "title": "LC 200 · 岛屿数量",
+    "url": "https://leetcode.com/problems/number-of-islands/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0200-0299/0200.Number%20of%20Islands/README.md",
+    "followup": "改为动态加入陆地时，怎样用并查集维护数量？"
+  },
+  {
+    "id": "lowest_common_ancestor_of_a_binary_tree",
+    "title": "LC 236 · 二叉树的最近公共祖先",
+    "url": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0200-0299/0236.Lowest%20Common%20Ancestor%20of%20a%20Binary%20Tree/README.md",
+    "followup": "如果其中一个节点不存在，原递归会返回什么？怎么修正？"
+  },
+  {
+    "id": "merge_intervals",
+    "title": "LC 56 · 合并区间",
+    "url": "https://leetcode.com/problems/merge-intervals/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0000-0099/0056.Merge%20Intervals/README.md",
+    "followup": "区间首尾相接时是否合并？如果区间以流式到达怎么办？"
+  },
+  {
+    "id": "reverse_linked_list",
+    "title": "LC 206 · 反转链表",
+    "url": "https://leetcode.com/problems/reverse-linked-list/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0200-0299/0206.Reverse%20Linked%20List/README.md",
+    "followup": "怎样只反转指定区间并保持前后连接？"
+  },
+  {
+    "id": "trapping_rain_water",
+    "title": "LC 42 · 接雨水",
+    "url": "https://leetcode.com/problems/trapping-rain-water/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0000-0099/0042.Trapping%20Rain%20Water/README.md",
+    "followup": "双指针什么时候可以确定一侧水量？和单调栈相比如何解释不变量？"
+  },
+  {
+    "id": "group_anagrams",
+    "title": "LC 49 · 字母异位词分组",
+    "url": "https://leetcode.cn/problems/group-anagrams/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0000-0099/0049.Group%20Anagrams/README.md",
+    "followup": "排序签名与计数签名的复杂度分别是什么？字符集扩大时怎么选？"
+  },
+  {
+    "id": "longest_consecutive_sequence",
+    "title": "LC 128 · 最长连续序列",
+    "url": "https://leetcode.cn/problems/longest-consecutive-sequence/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0100-0199/0128.Longest%20Consecutive%20Sequence/README.md",
+    "followup": "为什么只从没有前驱的数字开始扩张？有大量重复时复杂度如何？"
+  },
+  {
+    "id": "sliding_window_maximum",
+    "title": "LC 239 · 滑动窗口最大值",
+    "url": "https://leetcode.cn/problems/sliding-window-maximum/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0200-0299/0239.Sliding%20Window%20Maximum/README.md",
+    "followup": "队列里为什么存下标？重复最大值怎样处理过期？"
+  },
+  {
+    "id": "daily_temperatures",
+    "title": "LC 739 · 每日温度",
+    "url": "https://leetcode.cn/problems/daily-temperatures/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0700-0799/0739.Daily%20Temperatures/README.md",
+    "followup": "相同温度是否应该出栈？如何证明总操作次数是线性的？"
+  },
+  {
+    "id": "kth_largest_element_in_an_array",
+    "title": "LC 215 · 数组中的第 K 个最大元素",
+    "url": "https://leetcode.cn/problems/kth-largest-element-in-an-array/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0200-0299/0215.Kth%20Largest%20Element%20in%20an%20Array/README.md",
+    "followup": "流式输入时用堆还是快选？快选最坏复杂度是多少？"
+  },
+  {
+    "id": "house_robber",
+    "title": "LC 198 · 打家劫舍",
+    "url": "https://leetcode.cn/problems/house-robber/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0100-0199/0198.House%20Robber/README.md",
+    "followup": "如果首尾相邻或要还原被选下标，状态怎么变？"
+  },
+  {
+    "id": "course_schedule",
+    "title": "LC 207 · 课程表",
+    "url": "https://leetcode.com/problems/course-schedule/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0200-0299/0207.Course%20Schedule/README.md",
+    "followup": "如何输出一条合法顺序？如果存在环，怎样返回一条环？"
+  }
+]

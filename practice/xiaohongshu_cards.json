@@ -1,0 +1,1484 @@
+[
+  {
+    "id": "xhs:sft",
+    "kind": "model",
+    "topic": "llm",
+    "title": "SFT 数据量、质量与 RL 启动",
+    "question": "怎么判断 SFT 数据够不够？规模扩大十倍时如何筛选？什么时候开始 RL？",
+    "answer": "用增量学习曲线与分任务验证集判断边际收益；做去重、质量分层和污染检查。确认基础格式、工具使用与奖励可验证后，用小规模 rollout 试验判断是否有可学习信号。",
+    "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d",
+    "sources": [
+      {
+        "title": "阿里大模型算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d"
+      },
+      {
+        "title": "腾讯 Agent 项目深挖",
+        "url": "https://www.xiaohongshu.com/explore/6af56e04000000002a018477"
+      },
+      {
+        "title": "大模型算法面试八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a1ac5900000000035026578"
+      },
+      {
+        "title": "LLM 与 Agent 八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a159aa80000000035027199"
+      },
+      {
+        "title": "字节飞书大模型面经",
+        "url": "https://www.xiaohongshu.com/explore/69fed8db000000002003bfcb"
+      },
+      {
+        "title": "27 届秋招算法复盘",
+        "url": "https://www.xiaohongshu.com/explore/6ae1aa0d0000000027016d59"
+      }
+    ],
+    "source_followup": "如何设计数学、代码、中文和工具数据的混训消融？迁移到不同大小或 Dense／MoE 基座时怎样验证？"
+  },
+  {
+    "id": "xhs:grpo",
+    "kind": "model",
+    "topic": "llm",
+    "title": "PPO、GRPO 与组内优势",
+    "question": "比较 PPO 与 GRPO。为什么同组全对或全错会丢失相对优势？写出 GRPO loss 的核心步骤。",
+    "answer": "PPO 常用 critic 与 GAE；GRPO 用同一提示下的组内回报作相对基线。计算标准化优势、概率比和裁剪目标，再按配方加入 KL。组内同奖时相对优势为零，可调整题目难度或采样多样性，并检查奖励是否失灵。",
+    "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d",
+    "sources": [
+      {
+        "title": "阿里大模型算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d"
+      },
+      {
+        "title": "腾讯 Agent 项目深挖",
+        "url": "https://www.xiaohongshu.com/explore/6af56e04000000002a018477"
+      },
+      {
+        "title": "社招算法面试观察",
+        "url": "https://www.xiaohongshu.com/explore/6acc2619000000000b005c2a"
+      },
+      {
+        "title": "大模型算法面试八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a1ac5900000000035026578"
+      },
+      {
+        "title": "LLM 与 Agent 八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a159aa80000000035027199"
+      },
+      {
+        "title": "字节飞书大模型面经",
+        "url": "https://www.xiaohongshu.com/explore/69fed8db000000002003bfcb"
+      },
+      {
+        "title": "米哈游基座算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6ad9f956000000002403d6c7"
+      },
+      {
+        "title": "高德社招算法岗面经",
+        "url": "https://www.xiaohongshu.com/explore/6a463d2a000000002003832c"
+      }
+    ],
+    "source_followup": "区分当前策略、采样时旧策略和参考模型。组大小、长度偏差、KL 系数和熵变化怎么监控？ 如果 rollout 组大小为 1，组内相对优势还有学习信号吗？"
+  },
+  {
+    "id": "xhs:ppo",
+    "kind": "model",
+    "topic": "llm",
+    "title": "PPO 的 Critic、GAE 和裁剪",
+    "question": "Critic 如何训练？TD、蒙特卡洛和 GAE 有何区别？正负优势下 clip 分别限制什么？",
+    "answer": "用回报或自举目标回归价值。GAE 是按时间衰减累加 TD 残差，在偏差和方差间折中。正优势限制过度抬高概率，负优势限制过度压低概率。Actor 更新策略，奖励模型提供反馈，Critic 估计未来回报。",
+    "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d",
+    "sources": [
+      {
+        "title": "阿里大模型算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d"
+      },
+      {
+        "title": "27 届算法秋招／实习面经",
+        "url": "https://www.xiaohongshu.com/explore/6ad9c9270000000033035d49"
+      }
+    ]
+  },
+  {
+    "id": "model:dpo",
+    "kind": "model",
+    "topic": "llm",
+    "title": "SFT、DPO 与 RL 的目标",
+    "question": "比较三种目标，并写出 DPO 的偏好对损失。",
+    "answer": "SFT 最大化示范输出概率；DPO 对同一提示下偏好与拒绝答案的相对参考模型对数概率差做 logistic 损失；RL 优化采样行为的期望回报。注意偏好数据覆盖和参考模型的作用。",
+    "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d",
+    "sources": [
+      {
+        "title": "阿里大模型算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d"
+      },
+      {
+        "title": "混元后训练面经",
+        "url": "https://www.xiaohongshu.com/explore/6ae42b11000000001201f894"
+      },
+      {
+        "title": "高德社招算法岗面经",
+        "url": "https://www.xiaohongshu.com/explore/6a463d2a000000002003832c"
+      }
+    ],
+    "source_followup": "参考模型是否更新？偏好对采集时如何控制长度和答案质量偏差？"
+  },
+  {
+    "id": "xhs:opd",
+    "kind": "model",
+    "topic": "llm",
+    "title": "在线蒸馏与 KL 方向",
+    "question": "OPD 在什么轨迹上学习？正向与反向 KL 的差异是什么？如何蒸馏代码 Agent？",
+    "answer": "在学生产生的状态上获取教师监督，减少训练和部署状态分布差异。KL(教师‖学生) 更强调覆盖教师支持，反向通常更强调学生采样区域。工具环境、反馈粒度和教师可访问性都要固定并做对照。",
+    "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d",
+    "sources": [
+      {
+        "title": "阿里大模型算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d"
+      },
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      },
+      {
+        "title": "LLM 与 Agent 八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a159aa80000000035027199"
+      },
+      {
+        "title": "字节剪映算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6af471eb000000002a02aaeb"
+      }
+    ],
+    "source_followup": "比较 OPD、DPO 与 PPO 的监督来源。用明确的 KL 参数顺序解释覆盖和集中行为。"
+  },
+  {
+    "id": "xhs:rl-variants",
+    "kind": "model",
+    "topic": "llm",
+    "title": "GSPO、DAPO 与 MoE 训推一致性",
+    "question": "比较 GSPO 和 DAPO 的改动。MoE rollout 与训练重算的路由或 logprob 不一致会怎样？",
+    "answer": "GSPO 关注序列级重要性比与裁剪；DAPO 的改动包括非对称裁剪、动态采样与 token 级聚合。对齐模型版本、路由和精度，抽样比较 logprob、路由命中及 ratio 尾部。区分 on/off-policy 与 online/offline 数据来源。",
+    "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d",
+    "sources": [
+      {
+        "title": "阿里大模型算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d"
+      },
+      {
+        "title": "大模型算法面试八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a1ac5900000000035026578"
+      },
+      {
+        "title": "LLM 与 Agent 八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a159aa80000000035027199"
+      },
+      {
+        "title": "字节飞书大模型面经",
+        "url": "https://www.xiaohongshu.com/explore/69fed8db000000002003bfcb"
+      },
+      {
+        "title": "米哈游基座算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6ad9f956000000002403d6c7"
+      },
+      {
+        "title": "字节剪映算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6af471eb000000002a02aaeb"
+      }
+    ],
+    "source_followup": "推导 DAPO 与 GRPO 的归一化差异。过滤同奖组后怎样避免长期遗漏困难任务？如何比较 GSPO 和 Dr.GRPO？"
+  },
+  {
+    "id": "xhs:metrics",
+    "kind": "model",
+    "topic": "ml",
+    "title": "Pass@k、熵与困惑度",
+    "question": "三个指标各衡量什么？低困惑度或低熵能否说明答案更正确？",
+    "answer": "Pass@k 衡量 k 次中至少一次通过的概率；熵衡量预测分布的不确定性；困惑度是平均负对数似然的指数。报告解码条件、样本预算和任务成功指标，避免把分布统计直接当正确率。",
+    "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d",
+    "sources": [
+      {
+        "title": "阿里大模型算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d"
+      },
+      {
+        "title": "27 届算法秋招／实习面经",
+        "url": "https://www.xiaohongshu.com/explore/6ad9c9270000000033035d49"
+      }
+    ]
+  },
+  {
+    "id": "xhs:compression",
+    "kind": "model",
+    "topic": "agent",
+    "title": "上下文压缩、Gist 与缓存",
+    "question": "什么时候压缩上下文？如何权衡 Gist 或摘要带来的信息损失与前缀缓存？",
+    "answer": "稳定前缀利于命中，重写前缀会破坏已有 KV 的复用。用保留原文、摘要、压缩表示做对照，跟踪证据回忆、命中率、TTFT 和错误率。按阈值与任务类型切片。",
+    "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d",
+    "sources": [
+      {
+        "title": "阿里大模型算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d"
+      },
+      {
+        "title": "大模型算法面试八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a1ac5900000000035026578"
+      },
+      {
+        "title": "LLM 与 Agent 八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a159aa80000000035027199"
+      },
+      {
+        "title": "字节剪映算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6af471eb000000002a02aaeb"
+      }
+    ],
+    "source_followup": "超长工具结果如何在裁剪、摘要与外部引用之间选择？哪些约束和证据应保留？"
+  },
+  {
+    "id": "xhs:compare",
+    "kind": "model",
+    "topic": "qwen",
+    "title": "DeepSeek 与 Qwen 技术报告对比",
+    "question": "选定明确的 DeepSeek 和 Qwen 检查点，从架构、后训练、上下文与部署比较。",
+    "answer": "先注明版本和权重来源，再对齐活跃参数、注意力结构、推理预算和评测协议；报告数据未披露的部分。用本地 Qwen 模型精读作为一侧依据。",
+    "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d",
+    "sources": [
+      {
+        "title": "阿里大模型算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d"
+      }
+    ]
+  },
+  {
+    "id": "xhs:agent-loop",
+    "kind": "project",
+    "topic": "agent",
+    "title": "手写 Agent Loop 与记忆",
+    "question": "写出工具循环伪代码，解释终止条件、短期与长期记忆以及过期信息。",
+    "answer": "读取状态→选动作→校验并执行→回填结果→验证任务状态。用步数、时间与重复检测终止。短期记忆保存本轮状态，长期记忆带时间、权限与失效策略。",
+    "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d",
+    "sources": [
+      {
+        "title": "阿里大模型算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d"
+      },
+      {
+        "title": "阿里 AI 应用算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6a7429040000000026035dec"
+      },
+      {
+        "title": "大模型算法面试八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a1ac5900000000035026578"
+      },
+      {
+        "title": "LLM 与 Agent 八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a159aa80000000035027199"
+      }
+    ],
+    "source_followup": "Function calling、MCP 和 Skill 分别位于哪一层？对照 Agent、固定工作流和模型微调的适用场景。"
+  },
+  {
+    "id": "xhs:reward",
+    "kind": "project",
+    "topic": "agent",
+    "title": "Agent 奖励、截断和过程评分",
+    "question": "如何给参数错误、工具失败、冗余调用和部分成功计分？如何防刷奖励并提升样本效率？",
+    "answer": "区分模型错误、环境错误与完成度。结果奖励以外部验证为准，过程奖励用可审计的里程碑，并计入步骤成本。记录截断原因，用留出任务监测奖励上涨而成功率下降。",
+    "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d",
+    "sources": [
+      {
+        "title": "阿里大模型算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d"
+      },
+      {
+        "title": "混元后训练面经",
+        "url": "https://www.xiaohongshu.com/explore/6ae42b11000000001201f894"
+      },
+      {
+        "title": "腾讯 Agent 项目深挖",
+        "url": "https://www.xiaohongshu.com/explore/6af56e04000000002a018477"
+      },
+      {
+        "title": "大模型算法面试八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a1ac5900000000035026578"
+      },
+      {
+        "title": "字节剪映算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6af471eb000000002a02aaeb"
+      }
+    ],
+    "source_followup": "如何 mask 工具返回和超长截断 token？为什么终局奖励让跨回合 credit assignment 变难？"
+  },
+  {
+    "id": "xhs:harness",
+    "kind": "project",
+    "topic": "agent",
+    "title": "Harness 与 RL：先改哪一层",
+    "question": "失败时怎么判断应改工具框架、SFT 数据、采样还是 RL？多专家系统怎么设计？",
+    "answer": "先用可重放轨迹定位工具、状态或模型问题；固定模型替换 harness，固定 harness 替换模型做交叉对照。多专家明确路由、预算、结果合并和回退，线上按任务类型监控。",
+    "url": "https://www.xiaohongshu.com/explore/6af56e04000000002a018477",
+    "sources": [
+      {
+        "title": "腾讯 Agent 项目深挖",
+        "url": "https://www.xiaohongshu.com/explore/6af56e04000000002a018477"
+      },
+      {
+        "title": "大模型算法面试八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a1ac5900000000035026578"
+      },
+      {
+        "title": "LLM 与 Agent 八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a159aa80000000035027199"
+      }
+    ],
+    "source_followup": "训练和部署 harness 不同如何验证？多专家方案如何比较共享模型、路由 LoRA 和多教师蒸馏？"
+  },
+  {
+    "id": "xhs:merging",
+    "kind": "project",
+    "topic": "llm",
+    "title": "模型合版、Task Arithmetic 和 TIES",
+    "question": "如何比较合版与混合数据训练？怎么选系数、处理符号冲突和定位能力退化？",
+    "answer": "同一基座上构造任务向量 θ任务−θ基座，按系数叠加。TIES 先裁剪小幅更新，再选符号并聚合一致方向。对齐训练预算与评测；按分支和任务做消融，再比较继续合版与增加 rollout 的收益。",
+    "url": "https://www.xiaohongshu.com/explore/6ae42b11000000001201f894",
+    "sources": [
+      {
+        "title": "混元后训练面经",
+        "url": "https://www.xiaohongshu.com/explore/6ae42b11000000001201f894"
+      }
+    ]
+  },
+  {
+    "id": "xhs:stability",
+    "kind": "model",
+    "topic": "ml",
+    "title": "Adam、混合精度和 NaN 排查",
+    "question": "Adam 为什么做偏差修正？怎么估算 72B 全参训练显存，定位首个 NaN？",
+    "answer": "分项算权重、梯度、主权重和一二阶动量，结合分片和激活检查点；激活取决于序列长、微批与层。记录首个非有限张量，检查输入、学习率、loss scaling 和梯度范数。",
+    "url": "https://www.xiaohongshu.com/explore/6ad9c9270000000033035d49",
+    "sources": [
+      {
+        "title": "27 届算法秋招／实习面经",
+        "url": "https://www.xiaohongshu.com/explore/6ad9c9270000000033035d49"
+      },
+      {
+        "title": "社招算法面试观察",
+        "url": "https://www.xiaohongshu.com/explore/6acc2619000000000b005c2a"
+      },
+      {
+        "title": "LLM 与 Agent 八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a159aa80000000035027199"
+      },
+      {
+        "title": "字节飞书大模型面经",
+        "url": "https://www.xiaohongshu.com/explore/69fed8db000000002003bfcb"
+      }
+    ],
+    "source_followup": "如何区分优化器状态、激活和通信的内存成本？loss 振荡时怎样排查？"
+  },
+  {
+    "id": "xhs:sampling",
+    "kind": "model",
+    "topic": "llm",
+    "title": "手写 MHA、稳定 Softmax 和 Top-k／Top-p",
+    "question": "说明张量维度、掩码、稳定 Softmax 及两类采样步骤。",
+    "answer": "QKᵀ 缩放加掩码；softmax 前减行最大值，随后乘 V。Top-k 保留固定候选数；top-p 按概率排序保留达到阈值的最小前缀，之后重新归一化。",
+    "url": "https://www.xiaohongshu.com/explore/6ad9c9270000000033035d49",
+    "sources": [
+      {
+        "title": "27 届算法秋招／实习面经",
+        "url": "https://www.xiaohongshu.com/explore/6ad9c9270000000033035d49"
+      },
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "xhs:packing",
+    "kind": "model",
+    "topic": "llm",
+    "title": "训练 Packing 与序列隔离",
+    "question": "多个样本拼到同一条序列后，怎样防止跨样本注意和 loss 污染？",
+    "answer": "维护段边界和位置索引，用分段因果掩码隔离样本，忽略边界处不该监督的标签。比较 packed 与逐条计算的 loss 和梯度。",
+    "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "xhs:representation",
+    "kind": "model",
+    "topic": "ml",
+    "title": "Decoder 表征与半监督投票",
+    "question": "如何用 decoder-only 模型比较语义相似度？多模型投票分歧大时怎么办？",
+    "answer": "明确 pooling、归一化和余弦相似度，用标注验证；生成模型的向量先做任务校验。投票按置信和分歧分桶，少量人工抽样确定保留、弃权或补标。",
+    "url": "https://www.xiaohongshu.com/explore/6ad9c9270000000033035d49",
+    "sources": [
+      {
+        "title": "27 届算法秋招／实习面经",
+        "url": "https://www.xiaohongshu.com/explore/6ad9c9270000000033035d49"
+      }
+    ]
+  },
+  {
+    "id": "xhs:vision",
+    "kind": "model",
+    "topic": "ml",
+    "title": "插值、转置卷积与池化反传",
+    "question": "比较上采样方案，并解释最大池化和平均池化如何反传。",
+    "answer": "最近邻简单，双线性按相邻值加权，转置卷积可学习但要检查重叠不均，插值后卷积可分离两步。最大池化把梯度给前向选中的位置，平均池化分摊梯度。",
+    "url": "https://www.xiaohongshu.com/explore/6ad9c9270000000033035d49",
+    "sources": [
+      {
+        "title": "27 届算法秋招／实习面经",
+        "url": "https://www.xiaohongshu.com/explore/6ad9c9270000000033035d49"
+      }
+    ]
+  },
+  {
+    "id": "xhs:rag",
+    "kind": "project",
+    "topic": "search",
+    "title": "金融 Agentic RAG 项目拆解",
+    "question": "怎样说明业务目标、情景记忆、问题分解、召回范围和预处理模型？召回率怎么评？",
+    "answer": "按业务任务拆出查询改写、权限过滤、检索和答案评测。情景记忆用带来源时间的事件记录；对采样查询标注相关文档评估 Recall@K，并检查标注覆盖和引用准确率。",
+    "url": "https://www.xiaohongshu.com/explore/6a7429040000000026035dec",
+    "sources": [
+      {
+        "title": "阿里 AI 应用算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6a7429040000000026035dec"
+      }
+    ]
+  },
+  {
+    "id": "xhs:drift",
+    "kind": "project",
+    "topic": "ml",
+    "title": "二分类离线好、线上差",
+    "question": "解释前向、反向和更新；线上准确率低时如何区分特征、样本和服务问题？",
+    "answer": "先用同一请求对比线上与离线特征和预测，再看切分泄漏、标签延迟、冷启动和分布变化。以时间回放定位首个差异，分桶评估并决定重校准、重训或回滚。",
+    "url": "https://www.xiaohongshu.com/explore/6a7429040000000026035dec",
+    "sources": [
+      {
+        "title": "阿里 AI 应用算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6a7429040000000026035dec"
+      }
+    ]
+  },
+  {
+    "id": "xhs:rec-ranking",
+    "kind": "project",
+    "topic": "recommendation",
+    "title": "推荐多目标、负样本和时序排序",
+    "question": "目标如何选择和解稀疏？伪负样本怎么修正？DIN、DIEN 和 Transformer 怎么比较？",
+    "answer": "说明业务指标、曝光与转化窗口；按目标统计缺失和梯度冲突。用负采样校正或曝光对照。固定样本与算力，对照静态特征、时序兴趣和注意力结构。",
+    "url": "https://www.xiaohongshu.com/explore/6aa18461000000000b00fd36",
+    "sources": [
+      {
+        "title": "淘天生成式推荐面经",
+        "url": "https://www.xiaohongshu.com/explore/6aa18461000000000b00fd36"
+      }
+    ]
+  },
+  {
+    "id": "xhs:rec-retrieval",
+    "kind": "project",
+    "topic": "recommendation",
+    "title": "多路召回、生成式推荐与量化 ID",
+    "question": "如何量化每路召回的贡献？OneRec、RankMixer、RQ-VAE 和 VQ-VAE 分别解决什么？",
+    "answer": "先做离线去路和增量覆盖，再用线上消融区分重叠贡献。生成式推荐可用语义 ID 生成候选；RankMixer 属排序建模。RQ-VAE 逐级量化残差，VQ-VAE 的基本形式用单级码本，比较碰撞和长尾覆盖。",
+    "url": "https://www.xiaohongshu.com/explore/6aa18461000000000b00fd36",
+    "sources": [
+      {
+        "title": "淘天生成式推荐面经",
+        "url": "https://www.xiaohongshu.com/explore/6aa18461000000000b00fd36"
+      }
+    ]
+  },
+  {
+    "id": "xhs:rec-eval",
+    "kind": "model",
+    "topic": "recommendation",
+    "title": "AUC、GAUC、校准与训练轮次",
+    "question": "为什么推荐会看 GAUC？pCOC 怎么解释？负采样及单轮训练为何常被问到？",
+    "answer": "GAUC 先按用户或请求分组再聚合，需声明权重和无正负组处理；pCOC 可看预测与实际转化的比值，需先明确约定。比较负采样前后分布，并用时间切分检测多轮训练过拟合。",
+    "url": "https://www.xiaohongshu.com/explore/6aa18461000000000b00fd36",
+    "sources": [
+      {
+        "title": "淘天生成式推荐面经",
+        "url": "https://www.xiaohongshu.com/explore/6aa18461000000000b00fd36"
+      }
+    ]
+  },
+  {
+    "id": "xhs:rec-design",
+    "kind": "project",
+    "topic": "recommendation",
+    "title": "业务建模与推荐 Agent",
+    "question": "跨国家和行业怎么选择特征与架构？什么时候检索用 grep，什么时候用 RAG？",
+    "answer": "按市场分桶验证共享模型和独立特征；明确 Agent 工具和权限。精确定位代码标识符时适合词法查找，语义匹配适合向量检索；用真实任务对照覆盖、成本与延迟。",
+    "url": "https://www.xiaohongshu.com/explore/6aa18461000000000b00fd36",
+    "sources": [
+      {
+        "title": "淘天生成式推荐面经",
+        "url": "https://www.xiaohongshu.com/explore/6aa18461000000000b00fd36"
+      }
+    ]
+  },
+  {
+    "id": "xhs:uplift",
+    "kind": "project",
+    "topic": "ml",
+    "title": "多干预 Uplift 与司乘指标",
+    "question": "如何为多个营销动作估计增量效果？网约车业务如何兼顾司机和乘客？",
+    "answer": "定义对照及每种动作的反事实差值，优先随机实验；离线关注重叠性与增量价值，线上设置预算、履约与体验护栏并监控干预外溢。",
+    "url": "https://www.xiaohongshu.com/explore/6a0c02340000000036003890",
+    "sources": [
+      {
+        "title": "滴滴营销算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6a0c02340000000036003890"
+      }
+    ],
+    "source_followup": "如果目标是预测热点供需缺口，怎么构造训练样本和标签，并分业务与司机体验定义指标？"
+  },
+  {
+    "id": "xhs:vla",
+    "kind": "model",
+    "topic": "ml",
+    "title": "π 系列 VLA 的动作建模",
+    "question": "解释 π0 的 flow matching、FAST 的动作表示，以及 π0.5 泛化该怎么评。",
+    "answer": "连续动作序列可用 flow matching 建模；FAST 将动作压缩为 token 以用于自回归建模。泛化应在未见环境、物体和任务上按成功率分开评估，并固定执行频率和观察条件。",
+    "url": "https://www.xiaohongshu.com/explore/6a49e3dc00000000060318e7",
+    "sources": [
+      {
+        "title": "具身 π 系列面经",
+        "url": "https://www.xiaohongshu.com/explore/6a49e3dc00000000060318e7"
+      }
+    ],
+    "source_followup": "比较 π0、π0-FAST、π0.5 与 π0.6。分别从动作块、状态编码、跨场景数据和后训练解释版本演进。"
+  },
+  {
+    "id": "merge_intervals",
+    "kind": "algorithm",
+    "title": "LC 56 · 合并区间",
+    "url": "https://leetcode.cn/problems/merge-intervals/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0000-0099/0056.Merge%20Intervals/README.md",
+    "question": "",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "search_a_2d_matrix",
+    "kind": "algorithm",
+    "title": "LC 74 · 搜索二维矩阵",
+    "url": "https://leetcode.cn/problems/search-a-2d-matrix/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0000-0099/0074.Search%20a%202D%20Matrix/README.md",
+    "question": "",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "longest_increasing_subsequence",
+    "kind": "algorithm",
+    "title": "LC 300 · 最长递增子序列",
+    "url": "https://leetcode.cn/problems/longest-increasing-subsequence/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0300-0399/0300.Longest%20Increasing%20Subsequence/README.md",
+    "question": "",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "edit_distance",
+    "kind": "algorithm",
+    "title": "LC 72 · 编辑距离",
+    "url": "https://leetcode.cn/problems/edit-distance/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0000-0099/0072.Edit%20Distance/README.md",
+    "question": "",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "valid_parentheses",
+    "kind": "algorithm",
+    "title": "LC 20 · 有效括号",
+    "url": "https://leetcode.cn/problems/valid-parentheses/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0000-0099/0020.Valid%20Parentheses/README.md",
+    "question": "",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "kth_largest_element_in_an_array",
+    "kind": "algorithm",
+    "title": "LC 215 · 数组中的第 K 个最大元素",
+    "url": "https://leetcode.cn/problems/kth-largest-element-in-an-array/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0200-0299/0215.Kth%20Largest%20Element%20in%20an%20Array/README.md",
+    "question": "",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "longest_valid_parentheses",
+    "kind": "algorithm",
+    "title": "LC 32 · 最长有效括号",
+    "url": "https://leetcode.cn/problems/longest-valid-parentheses/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0000-0099/0032.Longest%20Valid%20Parentheses/README.md",
+    "question": "在力扣查看完整题面并作答，回来记录练习结果。",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "house_robber",
+    "kind": "algorithm",
+    "title": "LC 198 · 打家劫舍",
+    "url": "https://leetcode.cn/problems/house-robber/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0100-0199/0198.House%20Robber/README.md",
+    "question": "",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "reverse_linked_list",
+    "kind": "algorithm",
+    "title": "LC 206 · 反转链表",
+    "url": "https://leetcode.cn/problems/reverse-linked-list/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0200-0299/0206.Reverse%20Linked%20List/README.md",
+    "question": "",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "merge_sorted_array",
+    "kind": "algorithm",
+    "title": "LC 88 · 合并两个有序数组",
+    "url": "https://leetcode.cn/problems/merge-sorted-array/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0000-0099/0088.Merge%20Sorted%20Array/README.md",
+    "question": "在力扣查看完整题面并作答，回来记录练习结果。",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "longest_palindromic_substring",
+    "kind": "algorithm",
+    "title": "LC 5 · 最长回文子串",
+    "url": "https://leetcode.cn/problems/longest-palindromic-substring/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0000-0099/0005.Longest%20Palindromic%20Substring/README.md",
+    "question": "",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      },
+      {
+        "title": "字节剪映算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6af471eb000000002a02aaeb"
+      }
+    ]
+  },
+  {
+    "id": "longest_common_subsequence",
+    "kind": "algorithm",
+    "title": "LC 1143 · 最长公共子序列",
+    "url": "https://leetcode.cn/problems/longest-common-subsequence/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/1100-1199/1143.Longest%20Common%20Subsequence/README.md",
+    "question": "",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      },
+      {
+        "title": "字节飞书大模型面经",
+        "url": "https://www.xiaohongshu.com/explore/69fed8db000000002003bfcb"
+      }
+    ]
+  },
+  {
+    "id": "number_of_islands",
+    "kind": "algorithm",
+    "title": "LC 200 · 岛屿数量",
+    "url": "https://leetcode.cn/problems/number-of-islands/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0200-0299/0200.Number%20of%20Islands/README.md",
+    "question": "",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "coin_change",
+    "kind": "algorithm",
+    "title": "LC 322 · 零钱兑换",
+    "url": "https://leetcode.cn/problems/coin-change/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0300-0399/0322.Coin%20Change/README.md",
+    "question": "",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "word_break",
+    "kind": "algorithm",
+    "title": "LC 139 · 单词拆分",
+    "url": "https://leetcode.cn/problems/word-break/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0100-0199/0139.Word%20Break/README.md",
+    "question": "",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "maximum_running_time_of_n_computers",
+    "kind": "algorithm",
+    "title": "LC 2141 · 同时运行 N 台电脑的最长时间",
+    "url": "https://leetcode.cn/problems/maximum-running-time-of-n-computers/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/2100-2199/2141.Maximum%20Running%20Time%20of%20N%20Computers/README.md",
+    "question": "在力扣查看完整题面并作答，回来记录练习结果。",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "maximum_length_of_repeated_subarray",
+    "kind": "algorithm",
+    "title": "LC 718 · 最长重复子数组",
+    "url": "https://leetcode.cn/problems/maximum-length-of-repeated-subarray/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0700-0799/0718.Maximum%20Length%20of%20Repeated%20Subarray/README.md",
+    "question": "在力扣查看完整题面并作答，回来记录练习结果。",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "lowest_common_ancestor_of_a_binary_search_tree",
+    "kind": "algorithm",
+    "title": "LC 235 · 二叉搜索树的最近公共祖先",
+    "url": "https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-search-tree/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0200-0299/0235.Lowest%20Common%20Ancestor%20of%20a%20Binary%20Search%20Tree/README.md",
+    "question": "",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "sort_an_array",
+    "kind": "algorithm",
+    "title": "LC 912 · 快速排序",
+    "url": "https://leetcode.cn/problems/sort-an-array/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0900-0999/0912.Sort%20an%20Array/README.md",
+    "question": "在力扣查看完整题面并作答，回来记录练习结果。",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "house_robber_ii",
+    "kind": "algorithm",
+    "title": "LC 213 · 打家劫舍 II",
+    "url": "https://leetcode.cn/problems/house-robber-ii/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0200-0299/0213.House%20Robber%20II/README.md",
+    "question": "",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "best_time_to_buy_and_sell_stock_ii",
+    "kind": "algorithm",
+    "title": "LC 122 · 买卖股票的最佳时机 II",
+    "url": "https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-ii/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0100-0199/0122.Best%20Time%20to%20Buy%20and%20Sell%20Stock%20II/README.md",
+    "question": "在力扣查看完整题面并作答，回来记录练习结果。",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "minimum_size_subarray_sum",
+    "kind": "algorithm",
+    "title": "LC 209 · 长度最小的子数组",
+    "url": "https://leetcode.cn/problems/minimum-size-subarray-sum/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0200-0299/0209.Minimum%20Size%20Subarray%20Sum/README.md",
+    "question": "在力扣查看完整题面并作答，回来记录练习结果。",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "find_peak_element",
+    "kind": "algorithm",
+    "title": "LC 162 · 寻找峰值",
+    "url": "https://leetcode.cn/problems/find-peak-element/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0100-0199/0162.Find%20Peak%20Element/README.md",
+    "question": "在力扣查看完整题面并作答，回来记录练习结果。",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "word_break_ii",
+    "kind": "algorithm",
+    "title": "LC 140 · 单词拆分 II",
+    "url": "https://leetcode.cn/problems/word-break-ii/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0100-0199/0140.Word%20Break%20II/README.md",
+    "question": "在力扣查看完整题面并作答，回来记录练习结果。",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "trapping_rain_water",
+    "kind": "algorithm",
+    "title": "LC 42 · 接雨水",
+    "url": "https://leetcode.cn/problems/trapping-rain-water/description/",
+    "solution": "https://github.com/doocs/leetcode/blob/main/solution/0000-0099/0042.Trapping%20Rain%20Water/README.md",
+    "question": "",
+    "sources": [
+      {
+        "title": "阿里大模型算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6ab0fac2000000003602a36d"
+      }
+    ]
+  },
+  {
+    "id": "xhs:reverse-stack",
+    "kind": "model",
+    "topic": "ml",
+    "title": "手撕：只用递归反转栈",
+    "question": "不额外创建栈或数组，如何用递归原地反转一个栈？",
+    "answer": "递归弹出并保存栈底元素，反转剩余栈，再把原栈底压回栈顶。注意递归调用栈仍占 O(n) 额外空间，时间 O(n²)。",
+    "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78",
+    "sources": [
+      {
+        "title": "面试手撕算法题目速成",
+        "url": "https://www.xiaohongshu.com/explore/6ab280430000000033026a78"
+      }
+    ]
+  },
+  {
+    "id": "model:react",
+    "sources": [
+      {
+        "title": "大模型算法面试八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a1ac5900000000035026578"
+      },
+      {
+        "title": "LLM 与 Agent 八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a159aa80000000035027199"
+      }
+    ],
+    "source_followup": "用一条工具轨迹解释 action、observation 与下一次决策怎样衔接。"
+  },
+  {
+    "id": "model:lora",
+    "sources": [
+      {
+        "title": "字节算法社招面经",
+        "url": "https://www.xiaohongshu.com/explore/6a6d7a620000000033031ea3"
+      },
+      {
+        "title": "字节剪映算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6af471eb000000002a02aaeb"
+      },
+      {
+        "title": "字节飞书大模型面经",
+        "url": "https://www.xiaohongshu.com/explore/69fed8db000000002003bfcb"
+      },
+      {
+        "title": "高德社招算法岗面经",
+        "url": "https://www.xiaohongshu.com/explore/6a463d2a000000002003832c"
+      }
+    ],
+    "source_followup": "为什么 LoRA 通常有一个矩阵从零初始化？QLoRA 量化哪些权重，梯度更新哪些参数？ LoRA 的秩与缩放系数分别影响什么？若把零初始化放到另一个矩阵，首步梯度会怎样？"
+  },
+  {
+    "id": "model:transformer",
+    "sources": [
+      {
+        "title": "LLM 与 Agent 八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a159aa80000000035027199"
+      },
+      {
+        "title": "字节剪映算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6af471eb000000002a02aaeb"
+      },
+      {
+        "title": "字节飞书大模型面经",
+        "url": "https://www.xiaohongshu.com/explore/69fed8db000000002003bfcb"
+      }
+    ],
+    "source_followup": "比较 self-attention 与 cross-attention、encoder 与 decoder，推导 QK、softmax 和多头注意力复杂度。"
+  },
+  {
+    "id": "model:bm25",
+    "sources": [
+      {
+        "title": "字节剪映算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6af471eb000000002a02aaeb"
+      }
+    ]
+  },
+  {
+    "id": "model:hnsw",
+    "sources": [
+      {
+        "title": "字节剪映算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6af471eb000000002a02aaeb"
+      }
+    ]
+  },
+  {
+    "id": "model:bert",
+    "sources": [
+      {
+        "title": "滴滴信贷算法面经",
+        "url": "https://www.xiaohongshu.com/explore/69a414ae000000001d027970"
+      }
+    ]
+  },
+  {
+    "id": "model:xgboost",
+    "sources": [
+      {
+        "title": "滴滴信贷算法面经",
+        "url": "https://www.xiaohongshu.com/explore/69a414ae000000001d027970"
+      }
+    ],
+    "source_followup": "对照 LR、随机森林与 LightGBM，解释信用建模选型、类别不平衡和单调约束。"
+  },
+  {
+    "id": "two_sum",
+    "sources": [
+      {
+        "title": "滴滴营销算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6a0c02340000000036003890"
+      }
+    ],
+    "source_followup": "输入已经排序时如何做到线性时间和常数额外空间？"
+  },
+  {
+    "id": "xhs:async-rollout",
+    "kind": "project",
+    "topic": "agent",
+    "title": "异步 Rollout 与策略滞后",
+    "question": "长尾轨迹应该丢弃、截断、异步处理还是复用？怎样缓解策略滞后？",
+    "answer": "记录采样策略版本与 logprob，限制滞后并按长度和失败原因分桶；比较吞吐、等待时间和成功率，显式处理截断。",
+    "sources": [
+      {
+        "title": "大模型算法面试八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a1ac5900000000035026578"
+      }
+    ],
+    "url": "https://www.xiaohongshu.com/explore/6a1ac5900000000035026578"
+  },
+  {
+    "id": "xhs:infra-parallel",
+    "kind": "model",
+    "topic": "llm",
+    "title": "TP、PP、DP 与 ZeRO",
+    "question": "推导通信成本，按机器拓扑选并行方式。梯度累积、ZeRO 和量化分别节省什么？",
+    "answer": "TP 分算子并有频繁集合通信，PP 分层且有流水线空泡，DP 复制模型并聚合梯度。ZeRO 分片状态，累积调整有效批量；量化改变表示精度。",
+    "sources": [
+      {
+        "title": "大模型算法面试八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a1ac5900000000035026578"
+      },
+      {
+        "title": "LLM 与 Agent 八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a159aa80000000035027199"
+      }
+    ],
+    "url": "https://www.xiaohongshu.com/explore/6a1ac5900000000035026578"
+  },
+  {
+    "id": "xhs:infra-agent",
+    "kind": "project",
+    "topic": "agent",
+    "title": "分布式 Agent RL 的训练和推理",
+    "question": "怎样拆分 actor、rollout、环境和奖励？VeRL／Ray、vLLM／SGLang 和沙箱如何放到同一架构？",
+    "answer": "明确组件接口、队列和策略版本；分别测生成、工具 API、沙箱等待和重试。用轨迹长度分位数和利用率定位瓶颈，评估分离部署及异步化的代价。",
+    "sources": [
+      {
+        "title": "大模型算法面试八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a1ac5900000000035026578"
+      }
+    ],
+    "url": "https://www.xiaohongshu.com/explore/6a1ac5900000000035026578"
+  },
+  {
+    "id": "xhs:kl-entropy",
+    "kind": "model",
+    "topic": "ml",
+    "title": "交叉熵、KL 与参考策略",
+    "question": "推导交叉熵与 KL 的关系，说明什么时候优化二者等价。",
+    "answer": "H(p,q)=H(p)+KL(p‖q)。固定 p 时，关于 q 的优化等价。明确训练中谁是目标分布，区分参考策略约束和重要性比。",
+    "sources": [
+      {
+        "title": "米哈游基座算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6ad9f956000000002403d6c7"
+      },
+      {
+        "title": "LLM 与 Agent 八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a159aa80000000035027199"
+      }
+    ],
+    "url": "https://www.xiaohongshu.com/explore/6ad9f956000000002403d6c7"
+  },
+  {
+    "id": "xhs:posttrain-debug",
+    "kind": "project",
+    "topic": "agent",
+    "title": "Agent 后训练失败定位",
+    "question": "如何排查 rollout 和重算比值一开始不对、后期模型退步、线上指标没涨？",
+    "answer": "对齐 token、路由、mask 和 logprob，保留检查点并按任务对比。线上抽样回放到离线评测，按意图、工具、知识和决策失败分层定位。",
+    "sources": [
+      {
+        "title": "腾讯 Agent 项目深挖",
+        "url": "https://www.xiaohongshu.com/explore/6af56e04000000002a018477"
+      },
+      {
+        "title": "27 届秋招算法复盘",
+        "url": "https://www.xiaohongshu.com/explore/6ae1aa0d0000000027016d59"
+      }
+    ],
+    "url": "https://www.xiaohongshu.com/explore/6af56e04000000002a018477"
+  },
+  {
+    "id": "xhs:multimodal",
+    "kind": "model",
+    "topic": "ml",
+    "title": "视觉编码器、CLIP 与多模态对齐",
+    "question": "解释视觉 token、图文对比学习、图文相似度、VLM 结构和多模态 GRPO 如何连接。",
+    "answer": "区分双塔相似度、视觉投影和生成模型的跨模态融合；对齐输入分辨率与 token 预算，分别检查感知、推理、对齐及奖励可靠性。",
+    "sources": [
+      {
+        "title": "LLM 与 Agent 八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a159aa80000000035027199"
+      }
+    ],
+    "url": "https://www.xiaohongshu.com/explore/6a159aa80000000035027199"
+  },
+  {
+    "id": "xhs:prompt-labels",
+    "kind": "project",
+    "topic": "llm",
+    "title": "提示适配与模型辅助标注",
+    "question": "模型换代如何优化 prompt？如何评估模型标注和多意图分类？",
+    "answer": "固定样本与评估协议，按意图和难例做消融。模型标注按置信度抽样人工复核，报告偏差、一致性和多标签指标。",
+    "sources": [
+      {
+        "title": "LLM 与 Agent 八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a159aa80000000035027199"
+      }
+    ],
+    "url": "https://www.xiaohongshu.com/explore/6a159aa80000000035027199"
+  },
+  {
+    "id": "xhs:diffusion",
+    "kind": "model",
+    "topic": "ml",
+    "title": "扩散生成与图像视频评测",
+    "question": "解释扩散、文生图、图生图和图生视频。怎样评估审美、指令遵循与物理一致性？",
+    "answer": "区分条件输入和去噪生成过程；设计人工与自动分项评估，视频额外看时序稳定，含模糊意图时先明确约束并测多样性。",
+    "sources": [
+      {
+        "title": "LLM 与 Agent 八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a159aa80000000035027199"
+      }
+    ],
+    "url": "https://www.xiaohongshu.com/explore/6a159aa80000000035027199"
+  },
+  {
+    "id": "xhs:python",
+    "kind": "model",
+    "topic": "ml",
+    "title": "Python 并发、原子性和对象复制",
+    "question": "比较异步、线程、进程，解释 GIL、原子性、列表元组和深浅复制。",
+    "answer": "按 I/O 与 CPU 瓶颈选择并发方式；GIL 的影响取决于解释器和构建。原子性看完整操作的可见性；浅复制共享嵌套对象，元组槽位不可重新赋值。",
+    "sources": [
+      {
+        "title": "LLM 与 Agent 八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a159aa80000000035027199"
+      }
+    ],
+    "url": "https://www.xiaohongshu.com/explore/6a159aa80000000035027199"
+  },
+  {
+    "id": "xhs:sql",
+    "kind": "project",
+    "topic": "ml",
+    "title": "用 SQL 构造训练和评估样本",
+    "question": "如何按曝光构造点击或转化标签，处理窗口、去重和特征泄漏？",
+    "answer": "先定实体键和观测窗口，用窗口函数去重或选最近历史；只使用预测时可见数据，检查 join 放大与标签延迟。",
+    "sources": [
+      {
+        "title": "LLM 与 Agent 八股总结",
+        "url": "https://www.xiaohongshu.com/explore/6a159aa80000000035027199"
+      }
+    ],
+    "url": "https://www.xiaohongshu.com/explore/6a159aa80000000035027199"
+  },
+  {
+    "id": "xhs:semantic-id",
+    "kind": "project",
+    "topic": "recommendation",
+    "title": "语义 ID 前缀、RQ-VAE 与合法解码",
+    "question": "怎样解释语义 ID 各层，处理稀疏前缀、低维 embedding、量化梯度、码本利用和非法 ID？",
+    "answer": "逐级残差量化形成粗到细代码，不假定每层有固定业务语义。检查码本覆盖、碰撞和重构，按实现解释直通估计与各损失项；解码可限制到合法前缀树。",
+    "sources": [
+      {
+        "title": "字节算法社招面经",
+        "url": "https://www.xiaohongshu.com/explore/6a6d7a620000000033031ea3"
+      }
+    ],
+    "url": "https://www.xiaohongshu.com/explore/6a6d7a620000000033031ea3"
+  },
+  {
+    "id": "xhs:rec-sequence",
+    "kind": "project",
+    "topic": "recommendation",
+    "title": "长序列推荐与 Learned Query",
+    "question": "外部序列怎样对齐 target 和候选池？如何做时间感知、压缩和多样性正则？",
+    "answer": "检查时间边界、特征口径、序列长度分位数和节假日切片。对照 DIN 的目标相关聚合与 learned query 交叉注意力；监控协同样本占比、表征质量和多样性。",
+    "sources": [
+      {
+        "title": "字节算法社招面经",
+        "url": "https://www.xiaohongshu.com/explore/6a6d7a620000000033031ea3"
+      }
+    ],
+    "url": "https://www.xiaohongshu.com/explore/6a6d7a620000000033031ea3"
+  },
+  {
+    "id": "xhs:contrastive",
+    "kind": "model",
+    "topic": "ml",
+    "title": "InfoNCE 与排序损失",
+    "question": "对照 BCE、pointwise、pairwise、listwise，解释混合样本的对比学习如何设计。",
+    "answer": "BCE 常作逐点监督；pairwise 约束相对顺序；listwise 利用整组结构。InfoNCE 在正负候选间归一化，检查假负样本和温度影响，比较训练目标与业务指标是否一致。",
+    "sources": [
+      {
+        "title": "滴滴营销算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6a0c02340000000036003890"
+      }
+    ],
+    "url": "https://www.xiaohongshu.com/explore/6a0c02340000000036003890"
+  },
+  {
+    "id": "xhs:feature-credit",
+    "kind": "project",
+    "topic": "ml",
+    "title": "信贷风控特征与监控",
+    "question": "如何评估 APP 列表特征和 BERT 表征？如何使用 IV、PSI、AUC、KS 并验证分箱？",
+    "answer": "按时间切分；检查稳定性和泄漏，用 IV 辅助筛选，PSI 监控分布，AUC／KS 衡量区分度。验证分箱单调性、分群表现和业务阈值，并以消融估计增量。",
+    "sources": [
+      {
+        "title": "滴滴信贷算法面经",
+        "url": "https://www.xiaohongshu.com/explore/69a414ae000000001d027970"
+      }
+    ],
+    "url": "https://www.xiaohongshu.com/explore/69a414ae000000001d027970"
+  },
+  {
+    "id": "xhs:judge",
+    "kind": "project",
+    "topic": "agent",
+    "title": "LLM-as-Judge 的财务结果评测",
+    "question": "如何评估计算正确性？如何做 rubric、失败定位和修复？",
+    "answer": "用可执行计算与单位检查作主判据，rubric 单独检查证据与过程。对照人工标注，按错误层级监测误判率，对失败步骤重跑并验证状态。",
+    "sources": [
+      {
+        "title": "字节飞书大模型面经",
+        "url": "https://www.xiaohongshu.com/explore/69fed8db000000002003bfcb"
+      },
+      {
+        "title": "字节剪映算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6af471eb000000002a02aaeb"
+      }
+    ],
+    "url": "https://www.xiaohongshu.com/explore/69fed8db000000002003bfcb"
+  },
+  {
+    "id": "xhs:web-search",
+    "kind": "project",
+    "topic": "search",
+    "title": "Agent 联网检索和失败重试",
+    "question": "何时联网？如何评估召回、排序、来源正确性和重试？",
+    "answer": "按信息时效、证据缺口和预算触发；用 Recall、MRR、NDCG 分别看覆盖与排序。校验来源和引用，按错误类别重试并设终止条件。",
+    "sources": [
+      {
+        "title": "字节剪映算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6af471eb000000002a02aaeb"
+      }
+    ],
+    "url": "https://www.xiaohongshu.com/explore/6af471eb000000002a02aaeb"
+  },
+  {
+    "id": "xhs:project-evidence",
+    "kind": "project",
+    "topic": "ml",
+    "title": "项目收益归因与实验设计",
+    "question": "如何证明方案优于 SFT 或传统基线？多个奖励冲突、GMV 归因、训练数据来源怎么讲？",
+    "answer": "定义目标和约束，给出基线、数据来源和控制变量；做分层消融与线上随机实验。报告业务指标及护栏，并区分相关性与可归因增量。",
+    "sources": [
+      {
+        "title": "27 届秋招算法复盘",
+        "url": "https://www.xiaohongshu.com/explore/6ae1aa0d0000000027016d59"
+      }
+    ],
+    "url": "https://www.xiaohongshu.com/explore/6ae1aa0d0000000027016d59"
+  },
+  {
+    "id": "xhs:vla-state",
+    "kind": "model",
+    "topic": "ml",
+    "title": "具身 VLA 的状态与动作编码",
+    "question": "如何把连续本体状态、图像和语言融合？FAST 的 DCT 压缩何时会损失细节？",
+    "answer": "明确归一化、状态编码或分桶及其精度；用动作块频域系数压缩低频模式，对高速或精细动作比较重建误差和闭环成功率。",
+    "sources": [
+      {
+        "title": "具身 π 系列面经",
+        "url": "https://www.xiaohongshu.com/explore/6a49e3dc00000000060318e7"
+      }
+    ],
+    "url": "https://www.xiaohongshu.com/explore/6a49e3dc00000000060318e7"
+  },
+  {
+    "id": "xhs:game24",
+    "kind": "model",
+    "topic": "ml",
+    "title": "手撕：四个数算 24",
+    "question": "四个数各用一次，允许加减乘除和括号。怎样枚举所有可能并规避浮点误差？",
+    "answer": "每次取一对数并枚举合并结果，递归到只剩一个数。对减法和除法检查两个顺序，排除零分母，可用 Fraction 做精确运算。",
+    "sources": [
+      {
+        "title": "字节剪映算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6af471eb000000002a02aaeb"
+      }
+    ],
+    "url": "https://www.xiaohongshu.com/explore/6af471eb000000002a02aaeb"
+  },
+  {
+    "id": "xhs:grid-path",
+    "kind": "model",
+    "topic": "ml",
+    "title": "手撕：最小路径和的空间优化",
+    "question": "允许向右或向下移动，如何求网格的最小路径和并压缩 DP 空间？",
+    "answer": "当前状态等于格子代价加上方与左方状态的较小值。按行更新一维数组并处理边界，时间 O(mn)，空间 O(n)。",
+    "sources": [
+      {
+        "title": "滴滴营销算法面经",
+        "url": "https://www.xiaohongshu.com/explore/6a0c02340000000036003890"
+      }
+    ],
+    "url": "https://www.xiaohongshu.com/explore/6a0c02340000000036003890"
+  },
+  {
+    "id": "model:position-bias",
+    "sources": [
+      {
+        "title": "高德社招算法岗面经",
+        "url": "https://www.xiaohongshu.com/explore/6a463d2a000000002003832c"
+      }
+    ],
+    "source_followup": "训练使用位置特征后，线上排序怎样处理曝光位置？"
+  },
+  {
+    "id": "model:kv-cache",
+    "sources": [
+      {
+        "title": "推荐与大模型算法面经小合集",
+        "url": "https://www.xiaohongshu.com/explore/6aec7c620000000003006879"
+      }
+    ],
+    "source_followup": "给定 batch、上下文、层数、KV 头数和精度，估算 KV Cache 开销。"
+  },
+  {
+    "id": "find_median_from_data_stream",
+    "sources": [
+      {
+        "title": "华为后训练与强化学习面经",
+        "url": "https://www.xiaohongshu.com/explore/6abd2e15000000001a029966"
+      }
+    ],
+    "source_followup": "如何用两个堆维持中位数？如果加入滑动窗口删除操作怎么办？"
+  },
+  {
+    "id": "longest_substring_without_repeating_characters",
+    "sources": [
+      {
+        "title": "华为后训练与强化学习面经",
+        "url": "https://www.xiaohongshu.com/explore/6abd2e15000000001a029966"
+      }
+    ],
+    "source_followup": "维护最近位置时，如何保证窗口左边界始终单调？"
+  },
+  {
+    "id": "xhs:auc",
+    "kind": "model",
+    "topic": "ml",
+    "title": "手写 ROC-AUC 与并列分数",
+    "question": "如何从正负样本排序推导 AUC，并处理分数相等？",
+    "answer": "AUC 是随机正例得分高于负例的概率，并列按半次计。按分数分组排序，累计此前负例数和同分负例数，再除以正负对总数。缺任一类时指标未定义。",
+    "url": "https://www.xiaohongshu.com/explore/6aec7c620000000003006879",
+    "sources": [
+      {
+        "title": "推荐与大模型算法面经小合集",
+        "url": "https://www.xiaohongshu.com/explore/6aec7c620000000003006879"
+      }
+    ]
+  },
+  {
+    "id": "xhs:classification-loss",
+    "kind": "model",
+    "topic": "ml",
+    "title": "分类指标与回归损失",
+    "question": "为什么 F1 用调和平均？MAE、MSE 和 Huber 对异常值有何差异？",
+    "answer": "调和平均更受较小的 precision 或 recall 影响。MSE 随残差平方增长，MAE 线性增长，Huber 在小残差用二次、大残差用线性。按业务代价选择指标和阈值。",
+    "url": "https://www.xiaohongshu.com/explore/6a463d2a000000002003832c",
+    "sources": [
+      {
+        "title": "高德社招算法岗面经",
+        "url": "https://www.xiaohongshu.com/explore/6a463d2a000000002003832c"
+      }
+    ]
+  },
+  {
+    "id": "xhs:ordered-max-difference",
+    "kind": "model",
+    "topic": "ml",
+    "title": "手撕：前后元素最大差值",
+    "question": "给定无序数组，求 i < j 时 a[i]−a[j] 的最大值，答案可以为负。",
+    "answer": "从左向右维护此前最大值，先更新差值再把当前值纳入前缀。时间 O(n)，空间 O(1)。测试严格递增、相等与负数。",
+    "url": "https://www.xiaohongshu.com/explore/6a463d2a000000002003832c",
+    "sources": [
+      {
+        "title": "高德社招算法岗面经",
+        "url": "https://www.xiaohongshu.com/explore/6a463d2a000000002003832c"
+      }
+    ]
+  },
+  {
+    "id": "xhs:multi-lora",
+    "kind": "model",
+    "topic": "llm",
+    "title": "Multi-LoRA 推理与路由",
+    "question": "如何在同一个基座上按请求切换多个 LoRA？如何估计吞吐损失？",
+    "answer": "让请求携带适配器 ID，按需加载并缓存权重，批处理时保留请求与适配器映射。测不同命中率和批量下的吞吐、P95 及换入成本。",
+    "url": "https://www.xiaohongshu.com/explore/6abd2e15000000001a029966",
+    "sources": [
+      {
+        "title": "华为后训练与强化学习面经",
+        "url": "https://www.xiaohongshu.com/explore/6abd2e15000000001a029966"
+      }
+    ]
+  },
+  {
+    "id": "xhs:softmax-ce-gradient",
+    "kind": "model",
+    "topic": "ml",
+    "title": "手撕稳定 Softmax 与交叉熵梯度",
+    "question": "如何从 logits 一次算出交叉熵和梯度？",
+    "answer": "用 logsumexp 计算损失减目标 logit，梯度为 softmax 概率减 one-hot。批均值要除有效样本数。测试大 logits、平移不变性和有限差分。",
+    "url": "https://www.xiaohongshu.com/explore/6abd2e15000000001a029966",
+    "sources": [
+      {
+        "title": "华为后训练与强化学习面经",
+        "url": "https://www.xiaohongshu.com/explore/6abd2e15000000001a029966"
+      }
+    ]
+  },
+  {
+    "id": "xhs:data-structures",
+    "kind": "model",
+    "topic": "ml",
+    "title": "栈、队列、优先队列与状态复用",
+    "question": "什么时候选栈、队列、堆？动态规划和分治的区别是什么？",
+    "answer": "栈后进先出、队列先进先出，堆按优先级取元素。动态规划利用重复子问题的状态复用；经典分治递归解决相对独立的子问题。",
+    "url": "https://www.xiaohongshu.com/explore/6abd2e15000000001a029966",
+    "sources": [
+      {
+        "title": "华为后训练与强化学习面经",
+        "url": "https://www.xiaohongshu.com/explore/6abd2e15000000001a029966"
+      }
+    ]
+  }
+]

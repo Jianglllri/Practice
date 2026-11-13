@@ -1,0 +1,23 @@
+# MkDocs build output
+site/
+
+# PDF compile outputs (see configs/all-problems.yaml)
+*.pdf
+
+# Python build artifacts
+__pycache__/
+*.pyc
+*.egg-info/
+
+# Personal practice-progress state (see practice/progress.py)
+practice/.progress.json
+practice/.progress.lock
+
+# Parallel unit worktrees (see .worktrees/)
+.worktrees/
+
+# Browser session scratch (see .playwright-mcp/)
+.playwright-mcp/
+
+# Agent task board (see .tasks/)
+.tasks/
