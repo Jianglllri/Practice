@@ -34,6 +34,7 @@
 - 酒旅 Agent 岗主练 [库存截尾](http://127.0.0.1:8765/?view=industry&id=case:censored)、[Chronos-2](http://127.0.0.1:8765/?view=industry&id=case:chronos2)、[预测区间校准](http://127.0.0.1:8765/?view=industry&id=case:adaptive-conformal)、[定价离线评估](http://127.0.0.1:8765/?view=industry&id=case:pricing-ope-overlap)。设计滚动回测、切片指标、线上分流及价格护栏。
 - 优惠券分配追问按顺序练 [样本与平衡检查](http://127.0.0.1:8765/?view=industry&id=case:coupon-samples)、[IPW／PSM／PSS 与 DML](http://127.0.0.1:8765/?view=industry&id=case:coupon-debias)、[uplift 阈值分配](http://127.0.0.1:8765/?view=industry&id=case:coupon-assignment)、[非等比随机回放](http://127.0.0.1:8765/?view=industry&id=case:coupon-replay)、[周预算控制](http://127.0.0.1:8765/?view=industry&id=case:coupon-pacing)、[折扣与直减](http://127.0.0.1:8765/?view=industry&id=case:coupon-denomination)、[发券渠道与券包成本](http://127.0.0.1:8765/?view=industry&id=case:coupon-delivery)。用无券、8 折、85 折三臂合成日志，手算一次 IPS，给出阈值、预算护栏与退款后的净成本。连续剂量延伸读 [DRNet](https://ojs.aaai.org/index.php/AAAI/article/view/6014) 和 [VCNet](https://arxiv.org/abs/2103.07861)。
 - 选主投方向做一次 25 分钟系统设计，另一方向做一次 10 分钟口述。把两个项目按[复盘模板](复盘模板.md)写成可追问版本。
+- 长上下文专项。先讲清位置扩展和注意力成本，再用跨章节退款规则题设计全文与检索的对照实验。[Qwen 与 YaRN](http://127.0.0.1:8765/?view=industry&id=case:context-qwen) · [DeepSeek V4 系列](http://127.0.0.1:8765/?view=industry&id=case:context-deepseek) · [Gemini 多模态评测](http://127.0.0.1:8765/?view=industry&id=case:context-gemini) · [有效上下文评测](http://127.0.0.1:8765/?view=industry&id=case:context-evaluation) · [退款规则问答](http://127.0.0.1:8765/?view=industry&id=case:context-refund-rag)
 
 ## 第四周 · 模拟和补缺
 

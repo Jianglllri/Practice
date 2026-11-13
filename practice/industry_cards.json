@@ -788,5 +788,55 @@
     "answer": "先暂停晋级，线上回退到已验收版本，保留问题轨迹和奖励明细。用独立评测器重放，区分奖励定义漏洞、评测数据泄漏和环境权限漏洞。把真实任务结果改成可执行验收，例如由独立服务查最终状态，并将越权、改评测文件、跳过必要校验设为硬失败。隔离隐藏集与评分器，限制工具权限和可写目录，把已发现的捷径及其变体加入回归集。对长度刷分或模型评审偏好，分桶检查并用人工标注校准。用修正后的奖励重训或回滚到健康 checkpoint，并以冻结测试、对抗任务和线上灰度验收。",
     "url": "https://proceedings.mlr.press/v306/thaman26a.html",
     "effect": "同时报告代理奖励、独立任务成功率、作弊成功率和误拦率。按正常任务、已知捷径和未见变体分别回放，确认安全约束和任务效果都通过验收。"
+  },
+  {
+    "id": "case:context-qwen",
+    "kind": "model",
+    "topic": "industry",
+    "title": "长上下文｜Qwen3.8、YaRN 与混合注意力",
+    "question": "Qwen3.8-27B 原生 262K，配置可扩到 1M。位置编码和注意力结构分别解决什么？",
+    "answer": "YaRN 调整 RoPE 的频率尺度，扩展可用位置范围。Qwen3.8-27B 每组三层 Gated DeltaNet 和一层 Gated Attention，前者递推更新历史状态，后者仍保留直接访问历史 token 的能力和对应 KV 缓存。模型能接收 1M 是接口与配置规格，实际使用长度要按任务测。FlashAttention 用分块减少显存读写，标准全注意力的预填充计算量仍随长度平方增长。",
+    "effect": "分别在原生长度和扩展长度测准确率、证据位置敏感性、首 token 延迟和峰值显存。",
+    "url": "https://huggingface.co/Qwen/Qwen3.8-27B"
+  },
+  {
+    "id": "case:context-deepseek",
+    "kind": "paper",
+    "topic": "industry",
+    "title": "长上下文｜DeepSeek V4 的 CSA、HCA 和 CSA2",
+    "question": "DeepSeek V4 系列怎样降低百万 token 的注意力开销？V4.1-Flash 又改了什么？",
+    "answer": "V4 的 CSA 先压缩历史 KV，再按 query 选择相关块。HCA 用更强压缩保留粗粒度的全局历史。V4.1-Flash 的 CSA2 使用 Full、Reindex、Reuse 层模式，在层间共享部分 KV 与索引器状态，并复用部分层的 Top-K 索引。报告还描述了先在 64K 训练稀疏注意力，随后扩展到 1M。讨论风险时可举远距离细节被压缩、相关块漏选等例子。",
+    "effect": "用远距离精确引用和跨段推理对比不同长度，并记录延迟、显存和吞吐。",
+    "url": "https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash"
+  },
+  {
+    "id": "case:context-gemini",
+    "kind": "paper",
+    "topic": "industry",
+    "title": "多模态长上下文｜Gemini 怎样评估长视频和文档？",
+    "question": "同样标注 100 万输入 token，怎样判断模型能否从长视频或扫描文档找出细节？",
+    "answer": "Gemini 3 系列 API 指南列出 1M 输入窗口。Gemini 1.5 技术报告提供长文档、视频与音频的评估参考。分别设计定位和推理任务，例如标出对话时间戳、找表格所在页并结合正文解释。保持证据内容一致，改变证据位置、间隔、画面质量或采样密度。对扫描件先区分文字识别失败、版面关联失败和跨页推理失败。",
+    "effect": "比较证据页码或时间戳命中率、跨片段问答正确率和处理延迟，按输入长度和模态切片。",
+    "url": "https://arxiv.org/abs/2403.05530"
+  },
+  {
+    "id": "case:context-evaluation",
+    "kind": "model",
+    "topic": "industry",
+    "title": "长上下文评测｜怎么测有效上下文长度？",
+    "question": "模型在大海捞针测试得分很高，怎样验证它能稳定处理真实长文？",
+    "answer": "构造长度 × 证据位置 × 任务类型的评测矩阵。把同一证据放到文首、中间和文末，加入相似干扰项。任务覆盖单条检索、跨章节合并、冲突消解和证据不足拒答。固定解码、输出预算与测试口径，再按业务验收门槛定义有效上下文长度。",
+    "effect": "报告最差位置和跨章节任务的正确率、引用正确率与 P95 首 token 延迟。",
+    "url": "https://arxiv.org/abs/2404.06654"
+  },
+  {
+    "id": "case:context-refund-rag",
+    "kind": "project",
+    "topic": "industry",
+    "title": "退款规则问答｜全文、RAG 和章节扩展怎么选？",
+    "question": "退款依据分散在默认规则、节假日例外和版本生效日期里。怎样选方案并定位错误？",
+    "answer": "用同一模型对比全文直读、RAG 和先检索再扩展到父章节。检索按商品、版本和生效时间过滤，保留段落引用。构造过期规则、跨章节例外和证据不足的题。再给一组人工确认的完整证据，判断错误来自召回遗漏、规则优先级理解还是引用。",
+    "effect": "报告全证据召回率、答案正确率、引用正确率、过期规则误用率及 P95 首 token 延迟。",
+    "url": "https://arxiv.org/abs/2307.03172"
   }
 ]
