@@ -21,6 +21,7 @@
 - 加练真实训练故障。每题说出第一条证据、最小复现和修复验收。[训练中途才 OOM](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-oom-late) · [多卡训练卡住或 NCCL 超时](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-distributed-hang) · [断点续训后 Loss 跳变](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-checkpoint-resume) · [训练吞吐下降、GPU 利用率低](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-throughput-drop) · [SFT 目标指标涨了，通用能力掉了](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-sft-regression) · [离线验证好，上服务后掉点](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-train-serving-mismatch)
 - 加练训练数据量与模型选型。手算固定算力下的参数量和 token 取舍，再设计一组数据量与模型规模的交叉实验。 (7B vs. 14B, 1k / 2k / 4k)[预训练配比](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-pretrain-data-size) · [小样本 SFT 选型](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-sft-data-model-size) · [加数据还是换模型](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-data-model-ablation)
 - 微调难例加练。沿用 7B 与 14B 的退款规则案例，练习抽查标注、给全证据做对照，以及比较常规样本和难例的收益。 [跨章节题怎样补难例](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-sft-hard-example-selection)
+- 难例混采加练。沿用退款规则问答的 7B 和 14B 案例，比较四档比例，按跨章节收益、普通题护栏和未见文档表现选型。 [难例比例对照](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-sft-hard-example-mix)
 
 ## 第二周 · Agent 与 AutoResearch
 
