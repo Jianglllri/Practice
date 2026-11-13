@@ -17,6 +17,7 @@
 - 补机器学习基础。闭卷推导 MSE 的最优预测和 softmax 交叉熵的梯度，再练类别不平衡、正则化、优化器、数据泄漏和排序损失。[机器学习基础题](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-regression-loss)
 - 加练训练调参。口述模型扩容后怎样选峰值学习率，算一遍梯度累积后的有效 batch，再设计只改 warmup 或峰值学习率的对照。[模型扩容](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-capacity-lr) · [有效 batch](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-batch-lr) · [warmup 排障](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-warmup-diagnosis)
 - 用同一训练案例练五道追问。算有效 batch，区分 loss 震荡与不下降，再说明裁剪和衰减怎么做对照。[Batch 选型](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-batch-selection) · [Loss 震荡](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-loss-oscillation) · [Loss 不下降](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-loss-stalled) · [梯度裁剪](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-gradient-clipping) · [Weight decay](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-weight-decay-tuning)
+- 读训练曲线时，分别练持续震荡、损失与准确率背离和单步刺点。每题说出要看哪些日志、怎样复现、什么时候停止更新。[持续不稳](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-loss-persistent-instability) · [低 loss 与低准确率](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-low-loss-low-accuracy) · [偶发刺点](http://127.0.0.1:8765/?view=model&topic=ml&id=model:ml-loss-isolated-spike)
 
 ## 第二周 · Agent 与 AutoResearch
 
