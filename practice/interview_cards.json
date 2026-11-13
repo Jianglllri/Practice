@@ -509,5 +509,57 @@
     "title": "训练排障｜偶发 loss 刺点要不要处理？",
     "question": "训练跑得整体正常，某一步突然有刺点，随后回落。怎么判断是难样本、日志问题，还是有害更新？",
     "answer": "保留原始曲线，区分 micro-batch loss 和按有效 token 汇总的 optimizer step loss。保存刺点前 checkpoint、样本 ID、各 rank 有效标签数、样本长度、学习率、未裁剪梯度范数与参数更新幅度。用同一批次复现，并用相邻正常批次做对照。若可复现且集中在长序列、难例或极少有效标签，检查 mask、标签与归一化。若随学习率或精度变化，检查梯度溢出、跳步和更新。单次尖峰后训练及固定验证集很快恢复，可以记录并观察。若伴随非有限值、参数异常或验证集持续恶化，停止更新，从健康 checkpoint 恢复并验证修复。"
+  },
+  {
+    "id": "model:ml-oom-late",
+    "kind": "model",
+    "topic": "ml",
+    "title": "训练排障｜训练中途才 OOM",
+    "question": "前几千步正常，一到长样本或验证阶段就 OOM，怎么区分原因？",
+    "answer": "先记录失败 rank、序列长度、阶段和每卡 allocated/reserved 峰值。首个 optimizer step 失败要看状态初始化，长样本失败要看激活和动态 padding，验证阶段检查是否关闭梯度、是否在 GPU 上累计 logits。若 allocated 随步数增长，排查日志列表或缓存是否持有计算图。用同一批次和显存快照定位，再按原因做长度分桶、限制每批 token、减 micro-batch、activation checkpointing 或分片。用最长批次和完整验证窗口复测。",
+    "url": "https://docs.pytorch.org/docs/stable/torch_cuda_memory"
+  },
+  {
+    "id": "model:ml-distributed-hang",
+    "kind": "model",
+    "topic": "ml",
+    "title": "训练排障｜多卡训练卡住或 NCCL 超时",
+    "question": "多卡停在同一步，只有部分 rank 报 NCCL timeout，怎么找第一个故障？",
+    "answer": "收集所有 rank 的时间线和第一条异常，记录取数、前向、反向、collective、保存的进出点。先找提前 OOM、数据异常或 worker 退出的 rank，再确认所有 rank 以相同顺序参加 collective、训练步数匹配、没有条件分支只在部分 rank 调用通信。用相同数据先单卡、再双卡复现。确认程序一致后排查网络、驱动和设备错误。修复后用尾批和单 rank 异常注入检查能否正常结束或统一退出。",
+    "url": "https://docs.pytorch.org/docs/stable/distributed.html"
+  },
+  {
+    "id": "model:ml-checkpoint-resume",
+    "kind": "model",
+    "topic": "ml",
+    "title": "训练排障｜断点续训后 Loss 跳变",
+    "question": "恢复 checkpoint 后 loss 突变，怎样判断模型状态或数据进度恢复错了？",
+    "answer": "核对模型、优化器、学习率调度器、AMP scaler、全局步数、随机数状态和 sampler 游标是否来自同一训练点。优先在 optimizer step 边界保存，检查分片齐全再发布 checkpoint。恢复时核对下一个样本、学习率、有效 batch 和参数组。用相同配置对照连续训练与保存后重启后的几步，比较样本 ID、loss、梯度与更新。改变 world size 时重新核对数据切分和有效 batch。",
+    "url": "https://docs.pytorch.org/tutorials/beginner/saving_loading_models.html"
+  },
+  {
+    "id": "model:ml-throughput-drop",
+    "kind": "model",
+    "topic": "ml",
+    "title": "训练排障｜训练吞吐下降、GPU 利用率低",
+    "question": "模型没改，训练突然变慢或 GPU 利用率呈锯齿，怎么定位？",
+    "answer": "按有效 tokens/s 和 step time 看变化，记录实际长度、padding 比例和各 rank 耗时。用 profiler 拆取数、CPU 到 GPU 拷贝、计算、通信、评估和 checkpoint 写盘。用合成输入对照真实输入排除数据链路，再检查 tokenizer、存储、DataLoader worker、长序列和慢 rank。对症调整缓存、预取、分桶或保存频率，用同样本和长度分布复测吞吐与尾延迟。",
+    "url": "https://docs.pytorch.org/tutorials/intermediate/tensorboard_profiler_tutorial.html"
+  },
+  {
+    "id": "model:ml-sft-regression",
+    "kind": "model",
+    "topic": "ml",
+    "title": "训练排障｜SFT 目标指标涨了，通用能力掉了",
+    "question": "格式遵循和业务验证集指标变好，但通用问答、长上下文或拒答明显退化，怎么处理？",
+    "answer": "固定基座、提示、解码和评测样本，做基座与各 checkpoint 的配对比较。按训练域、通用域、长度和任务类型切片，确认模板或数据重复是否造成假增益。先找回归从哪个 checkpoint 开始，再分别试早停、减少训练步数、降低学习率或混入通用样本。选择同时满足业务收益与回归护栏的 checkpoint，用独立留出集复验。"
+  },
+  {
+    "id": "model:ml-train-serving-mismatch",
+    "kind": "model",
+    "topic": "ml",
+    "title": "训练排障｜离线验证好，上服务后掉点",
+    "question": "同一个 checkpoint 离线表现正常，推理服务输出却变差。怎么定位训练与服务差异？",
+    "answer": "冻结几条输入，逐级对齐模型版本、tokenizer、chat template、特殊 token、截断方向和生成参数。先用同精度、贪心解码比较输入 token 和首步 logits，再逐项恢复量化、采样、停止条件和输出解析。生成任务还要对齐工具 schema 与检索证据。把复现样本放进发布前回归，在目标负载下同时检查质量、截断率和延迟。"
   }
 ]
